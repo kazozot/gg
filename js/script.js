@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // const allSurahInfo -> dari surah-info-data.js
     // const allAyahMeta  -> dari quran-metadata.js
     // const DB           -> dari asbabun-nuzul-data.js
-    // const ENABLE_COMMENTS -> dari config.js [MODIFIKASI BARU]
+    // const ENABLE_COMMENTS -> dari config.js
     
     let ayahCounts = {}; // Cache untuk jumlah ayat per surah
     let asbabDataMap = new Map(); // Peta untuk mencari Asbabun Nuzul by key "surah-verseKey"
@@ -498,7 +498,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 giscusScript.setAttribute("data-reactions-enabled", "1");
                 giscusScript.setAttribute("data-emit-metadata", "1");
                 giscusScript.setAttribute("data-input-position", "top");
-                giscusScript.setAttribute("data-theme", "preferred_color_scheme");
+                
+                // --- [MODIFIKASI TEMA GISCUS] ---
+                // Baca tema dari localStorage, default ke 'light'
+                const websiteTheme = localStorage.getItem('theme') || 'light';
+                // Tentukan tema Giscus. Giscus menerima 'light' atau 'dark'.
+                const giscusTheme = websiteTheme === 'dark' ? 'dark' : 'light';
+                giscusScript.setAttribute("data-theme", giscusTheme);
+                // --- [AKHIR MODIFIKASI TEMA GISCUS] ---
+                
                 giscusScript.setAttribute("data-lang", "id");
                 giscusScript.setAttribute("crossorigin", "anonymous");
                 giscusScript.async = true;
@@ -581,6 +589,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             localStorage.setItem('theme', newTheme);
             applyTheme(newTheme);
+
+            // --- [MODIFIKASI BARU] ---
+            // Kirim pesan ke Giscus iframe untuk mengubah tema
+            // Kita cari iframe Giscus yang sedang aktif di dokumen
+            const giscusIframe = document.querySelector('iframe.giscus-frame');
+            if (giscusIframe) {
+                // Tentukan tema Giscus yang baru
+                const giscusTheme = newTheme === 'dark' ? 'dark' : 'light';
+                // Kirim pesan ke Giscus
+                giscusIframe.contentWindow.postMessage(
+                    { giscus: { setConfig: { theme: giscusTheme } } },
+                    'https://giscus.app' // Target origin Giscus
+                );
+            }
+            // --- [AKHIR MODIFIKASI BARU] ---
         });
         
         // Handle navigasi back/forward browser
