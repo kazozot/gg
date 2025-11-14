@@ -4,18 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asbabun Nuzul Digital</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <meta name="description" content="Website Asbabun Nuzul Digital untuk melihat sebab turunnya ayat-ayat Al-Qur'an. Pilih surah dan ayat untuk melihat riwayatnya.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-</head>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap">
+    </noscript>
+
+    <link rel="preload" href="css/style.css" as="style">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="js/surah-info-data.js" defer></script> 
+    <script src="js/quran-metadata.js" defer></script>
+    <script src="js/asbabun-nuzul-data.js" defer></script> 
+    <script src="js/config.js" defer></script>
+    <script src="js/script.js" defer></script>
+
+    <style>
+        /* (Style untuk btn-download Anda biarkan di sini, tidak masalah) */
+        .btn-download {
+            display: inline-block;
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px; 
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-download:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    </head>
 <body>
 
     <nav class="navbar">
         <div class="container nav-container">
             <a href="index.html" class="nav-brand">Asbabun Nuzul <strong>Digital</strong></a>
             <div class="nav-menu">
-                <button id="theme-toggle" class="theme-btn">
+                <a href="biografi.html" class="nav-link-item">Biografi Penulis</a>
+                <button id="theme-toggle" class="theme-btn" aria-label="Ganti mode terang/gelap">
                     <svg id="moon-icon" xmlns="http://www.w.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                     <svg id="sun-icon" xmlns="http://www.w.g.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 </button>
@@ -28,10 +65,21 @@
             <div class="main-title">
                 <h1>Asbabun Nuzul AL-Qur'an</h1>
                 <p>Pilih surah untuk melihat daftar ayat dan sebab turunnya.</p>
-            </div>
+                
+                <a href="https://dn790003.ca.archive.org/0/items/asbabunnuzul/Asbabun%20Nuzul_text.pdf" 
+                   id="download-pdf-btn" 
+                   class="btn-download" 
+                   target="_blank">
+                   Download PDF Kitab Asbabun Nuzul
+                </a>
+                </div>
 
             <div id="surah-list">
+                <div class="surah-list-placeholder">
+                    <div class="spinner"></div>
+                    <p>Memuat daftar surah...</p>
                 </div>
+            </div>
             
             <div id="verse-details-page" class="hidden">
                 <a id="back-button" class="back-link">< Kembali ke Daftar Surah</a>
@@ -61,11 +109,27 @@
         <p>&copy; 2025 - Website Asbabun Nuzul Digital</p>
     </footer>
 
-    <script src="js/surah-info-data.js"></script> 
-    <script src="js/quran-metadata.js"></script>
-    <script src="js/asbabun-nuzul-data.js"></script> 
-    
-    <script src="js/config.js"></script>
-    <script src="js/script.js"></script>
-</body>
+    <script>
+    // Skrip inline Anda aman di sini, 
+    // tetapi skrip 'download-pdf-btn' harus ada DI DALAM DOMContentLoaded
+    // karena skrip utama (script.js) di-defer.
+    document.addEventListener('DOMContentLoaded', function() {
+        const downloadBtn = document.getElementById('download-pdf-btn');
+        let clickCount = 0;
+        const url1 = 'https://www.effectivegatecpm.com/fcn4ievwa?key=bcbc16546436b7552e3779df0c689753';
+        
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function(event) {
+                if (clickCount === 0) {
+                    event.preventDefault(); 
+                    window.open(url1, '_blank'); 
+                    clickCount = 1;
+                } else {
+                    clickCount = 0; 
+                }
+            });
+        }
+    });
+    </script>
+    </body>
 </html>
