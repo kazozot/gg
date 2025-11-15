@@ -73,6 +73,10 @@ function injectAd(placeholderSelector, adConfig) {
 
         // 2. Buat iframe sebagai "halaman web mini"
         const adFrame = document.createElement('iframe');
+        
+        // [PERBAIKAN AKSESIBILITAS] Menambahkan judul untuk iframe
+        adFrame.title = 'Placeholder Iklan'; 
+        
         adFrame.width = adConfig.width || '100%';
         adFrame.height = adConfig.height || 100; // Fallback height
         adFrame.frameBorder = 0;
