@@ -1,8 +1,8 @@
-// --- MANAJEMEN IKLAN (VERSI PERBAIKAN) ---
-// File ini bergantung pada variabel 'ENABLE_ADS' dari config.js
+// --- MANAJEMEN IKLAN (VERSI PERBAIKAN V3 - iFrame untuk document.write) ---
 
 /**
  * Mengembalikan objek konfigurasi untuk Banner Ad (728x90)
+ * [MODIFIKASI] Menambahkan 'width' dan 'height' untuk iframe
  * @returns {object | null} Objek Konfigurasi atau null jika ads nonaktif
  */
 function getBannerAdConfig() {
@@ -12,6 +12,8 @@ function getBannerAdConfig() {
     return {
         type: 'banner',
         containerClass: 'ad-container ad-banner-728x90',
+        width: 728, // Dimensi untuk iframe
+        height: 90, // Dimensi untuk iframe
         // Konten untuk script inline
         inlineScriptContent: `
             atOptions = {
@@ -29,6 +31,7 @@ function getBannerAdConfig() {
 
 /**
  * Mengembalikan objek konfigurasi untuk Native Banner Ad
+ * (Fungsi ini tidak diubah, sudah benar)
  * @returns {object | null} Objek Konfigurasi atau null jika ads nonaktif
  */
 function getNativeAdConfig() {
@@ -46,9 +49,9 @@ function getNativeAdConfig() {
 }
 
 /**
- * Fungsi baru untuk menyisipkan iklan dengan membuat elemen DOM secara manual
- * @param {string} placeholderSelector - CSS selector (e.g., "#ad-placeholder-1")
- * @param {object} adConfig - Objek yang di-generate oleh getBannerAdConfig() atau getNativeAdConfig()
+ * Fungsi (V3) untuk menyisipkan iklan.
+ * Tipe 'native' (modern) disisipkan langsung via DOM.
+ * Tipe 'banner' (lama) disisipkan ke dalam iframe buatan.
  */
 function injectAd(placeholderSelector, adConfig) {
     if (!adConfig) return; // Ads dinonaktifkan
@@ -59,51 +62,81 @@ function injectAd(placeholderSelector, adConfig) {
         return;
     }
     
-    // [PENTING] Bersihkan placeholder sebelum menyisipkan ulang
-    // Ini mencegah duplikasi saat navigasi (misal, tekan 'back' atau ganti ayat)
+    // [PENTING] Bersihkan placeholder
     placeholder.innerHTML = ''; 
 
     try {
-        // 1. Buat container utama (wrapper div)
-        const adWrapper = document.createElement('div');
-        adWrapper.className = adConfig.containerClass;
-        
-        if (adConfig.type === 'banner') {
-            // --- Logika untuk Iklan Banner (inline + external) ---
-            
-            // 2a. Buat script inline
-            const inlineScript = document.createElement('script');
-            inlineScript.type = 'text/javascript';
-            // Menyisipkan kode via textContent/innerHTML ke elemen script 
-            // adalah cara yang benar agar dieksekusi
-            inlineScript.textContent = adConfig.inlineScriptContent; 
-            adWrapper.appendChild(inlineScript);
+        if (adConfig.type === 'native') {
+            // --- Logika untuk Iklan NATIVE (Sudah Benar & Berhasil) ---
+            const adWrapper = document.createElement('div');
+            adWrapper.className = adConfig.containerClass;
 
-            // 2b. Buat script external
-            const externalScript = document.createElement('script');
-            externalScript.type = 'text/javascript';
-            externalScript.src = adConfig.externalScriptSrc;
-            adWrapper.appendChild(externalScript);
-
-        } else if (adConfig.type === 'native') {
-            // --- Logika untuk Iklan Native (div internal + external) ---
-            
-            // 2a. Buat div internal yang dibutuhkan oleh script native
             const innerDiv = document.createElement('div');
             innerDiv.id = adConfig.innerDivId;
             adWrapper.appendChild(innerDiv);
 
-            // 2b. Buat script external
             const externalScript = document.createElement('script');
             externalScript.async = true;
-            externalScript.setAttribute('data-cfasync', 'false'); // Set atribut khusus
+            externalScript.setAttribute('data-cfasync', 'false');
             externalScript.src = adConfig.externalScriptSrc;
             adWrapper.appendChild(externalScript);
+            
+            placeholder.appendChild(adWrapper);
+
+        } else if (adConfig.type === 'banner') {
+            // --- Logika BARU untuk Iklan BANNER (via iFrame) ---
+            // Ini adalah perbaikan untuk skrip iklan yang menggunakan document.write()
+            
+            // 1. Buat kontainer luar (untuk style margin/padding)
+            const adWrapper = document.createElement('div');
+            adWrapper.className = adConfig.containerClass;
+
+            // 2. Buat iframe sebagai "halaman web mini"
+            const adFrame = document.createElement('iframe');
+            adFrame.width = adConfig.width;
+            adFrame.height = adConfig.height;
+            adFrame.frameBorder = 0;
+            adFrame.scrolling = 'no';
+            adFrame.style.border = 'none';
+            adFrame.style.overflow = 'hidden';
+            adFrame.style.maxWidth = '100%'; // Agar tetap responsif
+
+            // 3. Gabungkan adWrapper dan adFrame, lalu masukkan ke placeholder
+            adWrapper.appendChild(adFrame);
+            placeholder.appendChild(adWrapper);
+
+            // 4. Siapkan HTML lengkap untuk ditulis ke dalam iframe
+            const adHtml = `
+                <html>
+                <head>
+                    <style>
+                        /* Reset body margin/padding di dalam iframe */
+                        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+                    </style>
+                </head>
+                <body>
+                    <script type="text/javascript">
+                        ${adConfig.inlineScriptContent}
+                    <\/script>
+                    <script type="text/javascript" src="${adConfig.externalScriptSrc}"><\/script>
+                </body>
+                </html>
+            `;
+
+            // 5. Tulis HTML ke dalam iframe
+            // Kita gunakan 'setTimeout' 0 untuk memastikan iframe sudah 
+            // ter-render di DOM sebelum kita akses 'contentWindow'
+            setTimeout(() => {
+                if (adFrame.contentWindow) {
+                    const adDoc = adFrame.contentWindow.document;
+                    adDoc.open();
+                    adDoc.write(adHtml);
+                    adDoc.close();
+                } else {
+                    console.error('Tidak bisa mengakses contentWindow iframe untuk iklan di', placeholderSelector);
+                }
+            }, 0);
         }
-
-        // 3. Sisipkan wrapper yang sudah berisi script ke placeholder di halaman
-        placeholder.appendChild(adWrapper);
-
     } catch (e) {
         console.error('Gagal menyisipkan iklan ke', placeholderSelector, e);
     }
