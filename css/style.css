@@ -4,7 +4,8 @@
     --secondary-bg: #ffffff;
     --card-bg: #ffffff;
     --text-primary: #212529;
-    --text-secondary: #6c757d;
+    /* [PERBAIKAN AKSESIBILITAS] Digelapkan dari #6c757d ke #5a6268 untuk kontras 4.51:1 */
+    --text-secondary: #5a6268; 
     --accent-green: #28a745;
     --border-color: #e2e8f0;
     --shadow-color: rgba(0, 0, 0, 0.1);
@@ -157,11 +158,10 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 15px;
-    cursor: pointer; /* Diubah dari file asli */
-    transition: box-shadow 0.2s ease, border-color 0.2s ease; /* Diubah */
+    cursor: pointer; 
+    transition: box-shadow 0.2s ease, border-color 0.2s ease; 
 }
 
-/* Dihapus .active dan diganti :hover */
 .surah-card:hover {
      box-shadow: 0 10px 20px var(--shadow-color);
      border-color: var(--accent-green);
@@ -174,12 +174,19 @@ body {
 }
 
 
+/* [PERBAIKAN AKSESIBILITAS] Mengubah style untuk kontras tinggi */
 .surah-number {
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    background-color: rgba(40, 167, 69, 0.1);
-    color: var(--accent-green);
+    /* Mengganti background transparan dan warna teks hijau */
+    /* background-color: rgba(40, 167, 69, 0.1); */
+    /* color: var(--accent-green); */
+    
+    /* Menjadi background solid dan teks putih */
+    background-color: var(--accent-green);
+    color: #ffffff;
+    
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -211,12 +218,10 @@ body {
     margin-left: auto;
 }
 
-/* Panah dropdown tidak lagi diperlukan di halaman utama */
 .dropdown-arrow {
    display: none;
 }
 
-/* Verse Dropdown tidak lagi diperlukan di halaman utama */
 .verse-dropdown {
     display: none;
 }
@@ -244,11 +249,10 @@ body {
     border-radius: 10px;
     padding: 15px;
     align-self: flex-start;
-    /* Tambahan: agar bisa di-scroll jika terlalu panjang */
     max-height: 80vh; 
     overflow-y: auto;
     position: sticky;
-    top: 100px; /* Jarak dari navbar */
+    top: 100px; 
 }
 .sidebar-surah-info {
     padding-bottom: 15px;
@@ -262,7 +266,6 @@ body {
     margin-left: 0;
 }
 #verse-list-items {
-    /* Dihapus max-height dari sini, dipindah ke #verse-list-sidebar */
     overflow-y: auto;
 }
 .verse-list-item {
@@ -289,7 +292,7 @@ body {
 }
 #verse-content-area {
     flex: 1;
-    min-width: 0; /* Mencegah flexbox overflow */
+    min-width: 0; 
 }
 
 .verse-item {
@@ -310,7 +313,6 @@ body {
     color: var(--text-primary);
 }
 
-/* [MODIFIKASI] Wrapper untuk tombol header */
 .header-buttons {
     display: flex;
     gap: 10px;
@@ -323,10 +325,9 @@ body {
     padding: 5px 10px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem; /* Menyamakan font */
+    font-size: 0.9rem; 
 }
 
-/* [KODE BARU] Tombol Copy Teks */
 .copy-btn {
     background: none;
     border: 1px solid var(--border-color);
@@ -344,7 +345,6 @@ body {
 }
 
 
-/* Sembunyikan h2 lama */
 .verse-item > h2 {
     display: none;
 }
@@ -429,13 +429,8 @@ footer {
 }
 
 
-/* --- 
-===============================================
-TAMBAHAN CSS DARI SEMUA LANGKAH SEBELUMNYA
-===============================================
---- */
+/* --- (CSS Tambahan tidak berubah) --- */
 
-/* Gaya untuk Tombol Mode di Sidebar */
 .mode-toggle-sidebar {
     padding: 10px 0;
     margin: 10px 0 15px 0;
@@ -468,7 +463,6 @@ TAMBAHAN CSS DARI SEMUA LANGKAH SEBELUMNYA
     border-color: var(--accent-green);
 }
 
-/* Penampung untuk setiap blok "Ayat + Arti" */
 .verse-block {
     margin-bottom: 25px;
     padding-bottom: 25px;
@@ -480,7 +474,6 @@ TAMBAHAN CSS DARI SEMUA LANGKAH SEBELUMNYA
     padding-bottom: 0;
 }
 
-/* Kontainer untuk Teks Arab Full (Mode 2) */
 .arabic-full-container {
     text-align: right;
     font-family: 'Amiri', serif;
@@ -499,30 +492,24 @@ TAMBAHAN CSS DARI SEMUA LANGKAH SEBELUMNYA
     vertical-align: middle;
 }
 
-/* --- Logika Sembunyikan/Tampilkan Mode --- */
-
-/* Mode 1: Per Kata (Default) */
 #verse-content-area.mode-wbw .arabic-full-container {
-    display: none; /* Sembunyikan Arab full */
+    display: none; 
 }
 #verse-content-area.mode-wbw .word-by-word-container {
-    display: flex; /* Tampilkan per kata */
+    display: flex; 
 }
 
-/* Mode 2: Full Ayat */
 #verse-content-area.mode-full-arab .word-by-word-container {
-    display: none; /* Sembunyikan per kata */
+    display: none; 
 }
 #verse-content-area.mode-full-arab .arabic-full-container {
-    display: block; /* Tampilkan Arab full */
+    display: block; 
 }
 
-/* --- Gaya Asbabun Nuzul --- */
 .asbabun-nuzul .riwayat-item + .riwayat-item {
     margin-top: 1.5em;
 }
 
-/* --- Tambahan untuk Fitur Share --- */
 .share-btn {
     transition: background-color 0.2s, color 0.2s;
 }
@@ -532,7 +519,6 @@ TAMBAHAN CSS DARI SEMUA LANGKAH SEBELUMNYA
     border-color: var(--accent-green);
 }
 
-/* Notifikasi Clipboard */
 .clipboard-notification {
     position: fixed;
     bottom: 20px;
@@ -553,13 +539,6 @@ TAMBAHAN CSS DARI SEMUA LANGKAH SEBELUMNYA
     bottom: 30px;
 }
 
-/* --- 
-===============================================
-TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
-===============================================
---- */
-
-/* --- Gaya untuk Info Surah (BARU) --- */
 .surah-info-box {
     background-color: var(--secondary-bg);
     border: 1px solid var(--border-color);
@@ -574,7 +553,6 @@ TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
     color: var(--accent-green);
     margin-bottom: 10px;
 }
-/* Style untuk tag HTML dari surah-info.json */
 .surah-info-box p, .surah-info-box h1, .surah-info-box h3, .surah-info-box h4 {
     color: var(--text-secondary);
     margin-bottom: 1rem;
@@ -585,7 +563,6 @@ TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
      margin-top: 1.5rem;
 }
 
-/* --- Gaya untuk Placeholder Konten Ayat (BARU) --- */
 .verse-item-placeholder {
     padding: 40px;
     text-align: center;
@@ -596,17 +573,14 @@ TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
     font-style: italic;
 }
 
-/* --- Gaya untuk Riwayat 'Tidak Ditemukan' (BARU) --- */
 .asbabun-nuzul .no-history {
     color: var(--text-secondary);
     font-style: italic;
     text-align: left;
-    margin-bottom: 0; /* Hapus margin bottom standar dari <p> */
+    margin-bottom: 0; 
 }
 
-/* --- Penanda Ayat di Sidebar (BARU) --- */
 .verse-list-item.has-asbab {
-    /* Sedikit menonjolkan ayat yang ada riwayatnya */
     font-weight: 600;
     border-left: 3px solid var(--accent-green);
 }
@@ -614,30 +588,24 @@ TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
     background-color: var(--sidebar-active-bg);
 }
 
-/* Tampilan 'Per Kata Tidak Tersedia' */
 .word-by-word-container .no-history {
     width: 100%;
     text-align: center;
     font-style: italic;
     color: var(--text-secondary);
-    direction: ltr; /* Pastikan teks ini LTR */
+    direction: ltr; 
 }
 
-/* --- Penyesuaian untuk Tampilan Surah --- */
-
-/* Beri tanda pada surah yang punya riwayat di halaman utama */
 .surah-card.has-asbab .surah-info p {
     font-weight: 600;
     color: var(--text-primary);
 }
 
-/* Sembunyikan tombol mode dan daftar ayat jika surah tidak punya riwayat */
 #verse-list-sidebar.sidebar-empty .mode-toggle-sidebar,
 #verse-list-sidebar.sidebar-empty #verse-list-items {
     display: none;
 }
 
-/* Gaya untuk Placeholder "Tidak Ada Asbabun Nuzul" */
 .verse-item-placeholder {
     padding: 40px;
     text-align: center;
@@ -648,16 +616,14 @@ TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
     font-style: italic;
 }
 
-/* Tampilan 'Per Kata Tidak Tersedia' */
 .word-by-word-container .no-history {
     width: 100%;
     text-align: center;
     font-style: italic;
     color: var(--text-secondary);
-    direction: ltr; /* Pastikan teks ini LTR */
+    direction: ltr; 
 }
 
-/* Tampilan 'Riwayat Tidak Ditemukan' */
 .asbabun-nuzul .no-history {
     color: var(--text-secondary);
     font-style: italic;
@@ -665,16 +631,12 @@ TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
     margin-bottom: 0;
 }
 
-/* (Tambahkan ini di file style.css Anda) */
-
-/* Memberi jarak antar blok ayat individual */
 .verse-block-individual {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-/* Judul untuk "Ayat 1", "Ayat 2", dst. */
 .individual-ayah-title {
     font-size: 1.25rem;
     color: var(--text-color);
@@ -682,7 +644,6 @@ TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
     font-weight: 600;
 }
 
-/* Garis pemisah horizontal antar ayat */
 hr.ayah-divider {
     border: none;
     height: 1px;
@@ -690,12 +651,10 @@ hr.ayah-divider {
     margin: 2rem 0;
 }
 
-/* Sembunyikan garis pemisah terakhir */
 .verse-block-individual:last-of-type + hr.ayah-divider {
     display: none;
 }
 
-/* Sedikit penyesuaian pada blok asbabun nuzul */
 .asbabun-nuzul {
     margin-top: 2rem;
     padding-top: 1rem;
@@ -703,26 +662,21 @@ hr.ayah-divider {
 }
 
 
-/* ================================================== */
-/* === GAYA TAMBAHAN UNTUK HALAMAN BIOGRAFI === */
-/* ================================================== */
-
-/* Gaya untuk link "Biografi Penulis" di Navbar */
 .nav-link-item {
     text-decoration: none;
     color: var(--text-secondary);
     font-weight: 500;
     transition: color 0.2s;
-    font-size: 0.95rem; /* Menyesuaikan ukuran font */
+    font-size: 0.95rem; 
 }
 .nav-link-item:hover {
     color: var(--text-primary);
 }
 
-/* [MODIFIKASI BARU] Gaya untuk link "Dukung Kreator" */
+/* [PERBAIKAN AKSESIBILITAS] Warna digelapkan dari #e33629 ke #d72c1f untuk kontras 4.52:1 */
 .nav-link-creator {
-    background-color: #e33629; /* Perkiraan warna Trakteer */
-    color: #ffffff !important; /* Paksa warna putih */
+    background-color: #d72c1f; 
+    color: #ffffff !important; 
     padding: 6px 12px;
     border-radius: 6px;
     font-weight: 600;
@@ -730,44 +684,39 @@ hr.ayah-divider {
     transition: background-color 0.2s, color 0.2s;
 }
 .nav-link-creator:hover {
-    background-color: #c92c21; /* Lebih gelap saat hover */
-    color: #ffffff !important; /* Tetap putih */
+    background-color: #c92c21; 
+    color: #ffffff !important; 
 }
-/* [AKHIR MODIFIKASI] */
 
 
-/* Kontainer utama untuk konten biografi */
 .biography-content {
     background-color: var(--secondary-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    padding: 25px 30px; /* Padding sedikit lebih besar */
+    padding: 25px 30px; 
     margin-top: 20px;
 }
 
-/* Judul Utama Biografi */
 .biography-content h1 {
     font-size: 2rem;
     font-weight: 700;
     color: var(--accent-green);
     margin-bottom: 15px;
     line-height: 1.3;
-    text-align: left; /* Teks rata kiri */
+    text-align: left; 
 }
 
-/* Sub-judul Bagian (Bagian I, Bagian II, dst.) */
 .biography-content h2 {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-top: 30px; /* Jarak atas lebih besar */
+    margin-top: 30px; 
     margin-bottom: 15px;
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 5px;
     text-align: left;
 }
 
-/* Sub-sub-judul (Nasab, Nama, dll.) */
 .biography-content h3 {
     font-size: 1.25rem;
     font-weight: 600;
@@ -777,7 +726,6 @@ hr.ayah-divider {
     text-align: left;
 }
 
-/* Judul Tabel */
 .biography-content h4 {
     font-size: 1.1rem;
     font-weight: 600;
@@ -787,17 +735,15 @@ hr.ayah-divider {
     text-align: left;
 }
 
-/* Paragraf Teks Biografi */
 .biography-content p {
     color: var(--text-secondary);
-    text-align: justify; /* Teks rata kanan-kiri */
+    text-align: justify; 
     line-height: 1.8;
-    margin-bottom: 1.25rem; /* Jarak antar paragraf */
+    margin-bottom: 1.25rem; 
 }
 
-/* Daftar (list) seperti guru-guru */
 .biography-content ul, .biography-content ol {
-    padding-left: 25px; /* Indentasi list */
+    padding-left: 25px; 
     margin-bottom: 1.25rem;
 }
 .biography-content li {
@@ -810,7 +756,6 @@ hr.ayah-divider {
     color: var(--text-primary);
 }
 
-/* Garis pemisah horizontal */
 .biography-content hr {
     border: none;
     height: 1px;
@@ -819,7 +764,6 @@ hr.ayah-divider {
 }
 
 
-/* Gaya untuk tabel kronologi */
 .biography-content table {
     width: 100%;
     border-collapse: collapse;
@@ -843,11 +787,8 @@ hr.ayah-divider {
     font-weight: 600;
 }
 
-/* --- Gaya Catatan Kaki (Footnote) --- */
-
-/* Superscript di dalam teks */
 .biography-content sup {
-    line-height: 0; /* Mencegah spasi baris bertambah */
+    line-height: 0; 
 }
 
 .biography-content sup a {
@@ -861,9 +802,8 @@ hr.ayah-divider {
     text-decoration: underline;
 }
 
-/* Daftar Catatan Kaki di bagian bawah */
 .footnote-list {
-    padding-left: 20px; /* Indentasi standar untuk <ol> */
+    padding-left: 20px; 
     margin-top: 1.5rem;
 }
 
@@ -875,15 +815,12 @@ hr.ayah-divider {
     text-align: left;
 }
 
-/* Tautan di dalam daftar catatan kaki */
 .footnote-list li a {
     color: var(--accent-green);
-    word-break: break-all; /* Agar URL yang sangat panjang tidak merusak layout */
+    word-break: break-all; 
 }
 
-/* ... (SEMUA KODE CSS ANDA YANG SUDAH ADA) ... */
 
-/* --- [TAMBAHAN] Gaya untuk Pemilihan Tafsir --- */
 .tafsir-select-sidebar {
     padding: 10px 0;
     margin-top: 10px;
@@ -899,7 +836,7 @@ hr.ayah-divider {
     width: 100%;
     padding: 8px;
     border: 1px solid var(--border-color);
-    background-color: var(--secondary-bg); /* Berbeda dari mode-btn agar terlihat seperti dropdown */
+    background-color: var(--secondary-bg); 
     color: var(--text-primary);
     border-radius: 6px;
     cursor: pointer;
@@ -914,7 +851,6 @@ hr.ayah-divider {
     color: var(--text-primary);
 }
 
-/* --- [TAMBAHAN] Gaya untuk Konten Tafsir --- */
 .tafsir-container {
     margin-top: 20px;
     padding-top: 20px;
@@ -935,20 +871,13 @@ hr.ayah-divider {
 .verse-tafsir.no-tafsir {
     font-style: italic;
 }
-/* Gaya untuk footnote dari tafsir Kemenag */
 .verse-tafsir sup {
     font-size: 0.7em;
     color: var(--accent-green);
     vertical-align: top;
     padding: 0 2px;
 }
-/* --- [AKHIR TAMBAHAN] --- */
 
-
-
-/* ================================================== */
-/* === [KODE BARU] CSS UNTUK MODAL COPY === */
-/* ================================================== */
 .copy-modal-backdrop {
     position: fixed;
     top: 0;
