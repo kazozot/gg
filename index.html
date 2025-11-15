@@ -3,58 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asbabun Nuzul Digital</title>
-    
-    <meta name="description" content="Website Asbabun Nuzul Digital untuk melihat sebab turunnya ayat-ayat Al-Qur'an. Pilih surah dan ayat untuk melihat riwayatnya.">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap">
-    </noscript>
-
-    <link rel="preload" href="css/style.css" as="style">
+    <title>Asbabun Nuzul (Imam As-Suyuti) - Digital</title>
     <link rel="stylesheet" href="css/style.css">
-
-    <script src="js/surah-info-data.js" defer></script> 
-    <script src="js/quran-metadata.js" defer></script>
-    <script src="js/asbabun-nuzul-data.js" defer></script> 
-    <script src="js/config.js" defer></script>
-    <script src="js/script.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* (Style untuk btn-download Anda biarkan di sini, tidak masalah) */
         .btn-download {
             display: inline-block;
-            background-color: #007bff;
+            background-color: #007bff; /* Warna biru, bisa disesuaikan */
             color: #ffffff;
             padding: 10px 15px;
             text-decoration: none;
             border-radius: 5px;
-            margin-top: 15px; 
-            font-family: 'Poppins', sans-serif;
+            margin-top: 15px; /* Memberi jarak dari paragraf di atas */
+            font-family: 'Poppins', sans-serif; /* Menyesuaikan font */
             font-weight: 600;
             transition: background-color 0.3s ease;
             border: none;
             cursor: pointer;
         }
         .btn-download:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Warna saat hover */
         }
+        
+        /* [MODIFIKASI BARU] Menambahkan style sederhana untuk dropdown tafsir */
+        /* Menyamakan dengan style .mode-toggle-sidebar */
+        .tafsir-toggle-sidebar {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tafsir-toggle-sidebar p {
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color-secondary);
+        }
+        .tafsir-toggle-sidebar select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        .verse-footnotes {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.85em;
+            color: var(--text-color-secondary);
+            line-height: 1.6;
+        }
+        .verse-footnotes h4 {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        .tafsir-text {
+            padding-top: 5px;
+        }
+        /* [AKHIR MODIFIKASI] */
+
+        /* [MODIFIKASI BARU] Style untuk container iklan */
+        .ad-container {
+            width: 100%;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Mencegah script 'kabur' */
+            text-align: center;
+            background-color: var(--background-color-secondary); /* Warna latar belakang placeholder */
+        }
+        /* Style khusus untuk banner 728x90 */
+        .ad-banner-728x90 {
+            min-height: 90px; /* Sediakan ruang agar tidak lompat */
+            max-width: 100%; /* Agar responsif di mobile */
+        }
+        @media (min-width: 768px) {
+            .ad-banner-728x90 {
+                max-width: 728px; /* Batasi lebar banner di desktop */
+            }
+        }
+         /* Style khusus untuk native banner */
+        .ad-native-banner {
+             /* Biarkan tinggi/lebar diatur oleh script native */
+            padding: 10px 0;
+            min-height: 100px; /* Ketinggian minimum placeholder */
+        }
+        /* [AKHIR MODIFIKASI IKLAN] */
+
     </style>
     </head>
 <body>
 
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="nav-brand">Asbabun Nuzul <strong>Digital</strong></a>
+            <a href="index.html" class="nav-brand">Asbabun Nuzul <strong>(As-Suyuti)</strong></a>
             <div class="nav-menu">
                 <a href="biografi.html" class="nav-link-item">Biografi Penulis</a>
-                <button id="theme-toggle" class="theme-btn" aria-label="Ganti mode terang/gelap">
-                    <svg id="moon-icon" xmlns="http://www.w.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                    <svg id="sun-icon" xmlns="http://www.w.g.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                
+                <a href="https://trakteer.id/cinvisual" target="_blank" rel="noopener noreferrer" class="nav-link-item nav-link-creator">
+                    Dukung Kreator
+                </a>
+                <button id="theme-toggle" class="theme-btn">
+                    <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 </button>
             </div>
         </div>
@@ -62,10 +121,12 @@
 
     <main>
         <div class="container">
+            
+            <div id="ad-placeholder-home-top"></div>
+
             <div class="main-title">
-                <h1>Asbabun Nuzul AL-Qur'an</h1>
-                <p>Pilih surah untuk melihat daftar ayat dan sebab turunnya.</p>
-                
+                <h1>Kitab Asbabun Nuzul</h1>
+                <p>Karya Imam Jalaludin As-Suyuti. Pilih surah untuk melihat daftar ayat dan sebab turunnya.</p>
                 <a href="https://dn790003.ca.archive.org/0/items/asbabunnuzul/Asbabun%20Nuzul_text.pdf" 
                    id="download-pdf-btn" 
                    class="btn-download" 
@@ -75,17 +136,19 @@
                 </div>
 
             <div id="surah-list">
-                <div class="surah-list-placeholder">
-                    <div class="spinner"></div>
-                    <p>Memuat daftar surah...</p>
                 </div>
-            </div>
             
+            <div id="ad-placeholder-home-bottom"></div>
+
             <div id="verse-details-page" class="hidden">
                 <a id="back-button" class="back-link">< Kembali ke Daftar Surah</a>
                 
+                <div id="ad-placeholder-ayat-before-info"></div>
+
                 <div id="surah-info-box" class="surah-info-box">
                     </div>
+
+                <div id="ad-placeholder-ayat-after-info"></div>
 
                 <div class="verse-layout">
                     <div id="verse-list-sidebar">
@@ -94,7 +157,7 @@
                         <div class="verse-item-placeholder">
                             <p>Pilih ayat dari daftar di samping untuk melihat detail dan Asbabun Nuzul-nya.</p>
                         </div>
-                    </div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -105,14 +168,71 @@
     </div>
 
 
+    <div id="copy-modal-backdrop" class="copy-modal-backdrop hidden"></div>
+    <div id="copy-modal-content" class="copy-modal-content hidden">
+        <div class="copy-modal-header">
+            <h3 id="copy-modal-title">Copy Teks</h3>
+            <button id="copy-modal-close" class="copy-modal-close-btn">&times;</button>
+        </div>
+        <div class="copy-modal-body">
+            <p>Pilih komponen yang ingin Anda salin ke clipboard:</p>
+            
+            <div class="copy-options-group">
+                <strong>Tampilan Teks Arab:</strong>
+                <label>
+                    <input type="radio" name="arabic-style" id="copy-arabic-full" checked> Teks Arab (Full)
+                </label>
+                <label>
+                    <input type="radio" name="arabic-style" id="copy-wbw"> Teks Arab (Per Kata)
+                </label>
+            </div>
+            
+            <div class="copy-options-group">
+                <strong>Tampilan Terjemahan:</strong>
+                <label>
+                    <input type="radio" name="translation-style" id="copy-selected-tafsir" checked> Tafsir Terpilih (Saat ini)
+                </label>
+                <label>
+                    <input type="radio" name="translation-style" id="copy-all-tafsirs"> Semua Tafsir
+                </label>
+                <label>
+                    <input type="radio" name="translation-style" id="copy-no-tafsir"> Tanpa Tafsir
+                </label>
+            </div>
+            
+            <div class="copy-options-group">
+                <strong>Data Tambahan:</strong>
+                <label>
+                    <input type="checkbox" id="copy-asbab" checked> Sertakan Asbabun Nuzul
+                </label>
+            </div>
+        </div>
+        <div class="copy-modal-footer">
+            <button id="copy-modal-confirm" class="copy-modal-confirm-btn">Salin Teks</button>
+        </div>
+    </div>
     <footer>
         <p>&copy; 2025 - Website Asbabun Nuzul Digital</p>
+
+        <p style="margin-top: 5px; font-size: 0.8em;">
+            <a href="fitur.html" style="color: var(--text-secondary); text-decoration: none;">Fitur & Versi v1.0</a>
+        </p>
     </footer>
 
+    <script src="js/surah-info-data.js"></script> 
+    <script src="js/quran-metadata.js"></script>
+    <script src="js/asbabun-nuzul-data.js"></script> 
+    
+    <script src="js/data/tafsir-kemenag.js"></script>
+    <script src="js/data/tafsir-jalalayn.js"></script>
+    <script src="js/data/tafsir-muntakhab.js"></script>
+    <script src="js/data/tafsir-sabiq.js"></script>
+    <script src="js/data/tafsir-kingfahd.js"></script>
+    
+    <script src="js/config.js"></script>
+    <script src="js/ad-injector.js"></script> <script src="js/script.js"></script>
     <script>
-    // Skrip inline Anda aman di sini, 
-    // tetapi skrip 'download-pdf-btn' harus ada DI DALAM DOMContentLoaded
-    // karena skrip utama (script.js) di-defer.
+    // Skrip untuk tombol download (tidak diubah)
     document.addEventListener('DOMContentLoaded', function() {
         const downloadBtn = document.getElementById('download-pdf-btn');
         let clickCount = 0;
@@ -121,11 +241,14 @@
         if (downloadBtn) {
             downloadBtn.addEventListener('click', function(event) {
                 if (clickCount === 0) {
-                    event.preventDefault(); 
-                    window.open(url1, '_blank'); 
-                    clickCount = 1;
+                    // Klik pertama
+                    event.preventDefault(); // Mencegah href default (URL2)
+                    window.open(url1, '_blank'); // Buka URL1 di tab baru
+                    clickCount = 1; // Tandai sebagai klik pertama
                 } else {
-                    clickCount = 0; 
+                    // Klik kedua (dan seterusnya)
+                    // Biarkan aksi href default berjalan (membuka URL2)
+                    clickCount = 0; // Reset hitungan (opsional, agar siklus berulang)
                 }
             });
         }
