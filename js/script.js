@@ -205,6 +205,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const showVersePage = (surahNumber, initialAyahKey = null) => {
         surahListEl.classList.add('hidden');
         mainTitleEl.classList.add('hidden');
+
+        // [PERBAIKAN] Hapus ads dari Halaman Utama secara manual
+        // untuk mencegah ID conflict, terutama untuk native ad.
+        const homeAdTop = document.getElementById('ad-placeholder-home-top');
+        const homeAdBottom = document.getElementById('ad-placeholder-home-bottom');
+        if (homeAdTop) homeAdTop.innerHTML = '';
+        if (homeAdBottom) homeAdBottom.innerHTML = '';
+        // [AKHIR PERBAIKAN]
+
         verseDetailsPageEl.classList.remove('hidden');
         
         // [IKLAN BARU] Panggil fungsi injeksi untuk iklan Halaman Ayat (Statis)
@@ -933,6 +942,20 @@ document.addEventListener('DOMContentLoaded', () => {
         backButton.addEventListener('click', (e) => {
             e.preventDefault();
             verseDetailsPageEl.classList.add('hidden');
+
+            // [PERBAIKAN] Hapus semua ads dari Halaman Ayat secara manual
+            // Ini membersihkan placeholder statis
+            const ayatAd1 = document.getElementById('ad-placeholder-ayat-before-info');
+            const ayatAd2 = document.getElementById('ad-placeholder-ayat-after-info');
+            if (ayatAd1) ayatAd1.innerHTML = '';
+            if (ayatAd2) ayatAd2.innerHTML = '';
+            
+            // Ini membersihkan placeholder dinamis (jika ada)
+            // Cara gampangnya adalah membersihkan seluruh area konten
+            if (verseContentAreaEl) verseContentAreaEl.innerHTML = ''; 
+            // [AKHIR PERBAIKAN]
+
+
             surahListEl.classList.remove('hidden');
             mainTitleEl.classList.remove('hidden');
             // Hapus parameter dari URL
@@ -970,6 +993,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!checkURLParams()) {
                 // Jika kembali ke state tanpa parameter, tampilkan halaman utama
                 verseDetailsPageEl.classList.add('hidden');
+
+                // [PERBAIKAN] Hapus semua ads dari Halaman Ayat
+                const ayatAd1 = document.getElementById('ad-placeholder-ayat-before-info');
+                const ayatAd2 = document.getElementById('ad-placeholder-ayat-after-info');
+                if (ayatAd1) ayatAd1.innerHTML = '';
+                if (ayatAd2) ayatAd2.innerHTML = '';
+                if (verseContentAreaEl) verseContentAreaEl.innerHTML = '';
+                // [AKHIR PERBAIKAN]
+
                 surahListEl.classList.remove('hidden');
                 mainTitleEl.classList.remove('hidden');
 
