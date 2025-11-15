@@ -159,12 +159,12 @@ document.addEventListener('DOMContentLoaded', () => {
         surahListEl.innerHTML = '';
         
         // [IKLAN BARU] Panggil fungsi injeksi untuk iklan Halaman Utama
-        // Kita panggil fungsi dari ad-injector.js
+        // [MODIFIKASI] Menggunakan nama fungsi baru
         if (typeof injectAd === 'function') {
-            injectAd('#ad-placeholder-home-top', getBannerAdHTML());
-            injectAd('#ad-placeholder-home-bottom', getNativeAdHTML());
+            injectAd('#ad-placeholder-home-top', getBannerAdConfig());
+            injectAd('#ad-placeholder-home-bottom', getNativeAdConfig());
         }
-        // [AKHIR IKLAN BARU]
+        // [AKHIR MODIFIKASI]
 
         // Menggunakan allSurahInfo sebagai basis untuk 114 surah
         Object.keys(allSurahInfo).sort((a, b) => parseInt(a) - parseInt(b)).forEach(surahKey => {
@@ -208,11 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
         verseDetailsPageEl.classList.remove('hidden');
         
         // [IKLAN BARU] Panggil fungsi injeksi untuk iklan Halaman Ayat (Statis)
+        // [MODIFIKASI] Menggunakan nama fungsi baru
         if (typeof injectAd === 'function') {
-            injectAd('#ad-placeholder-ayat-before-info', getBannerAdHTML());
-            injectAd('#ad-placeholder-ayat-after-info', getBannerAdHTML());
+            injectAd('#ad-placeholder-ayat-before-info', getBannerAdConfig());
+            injectAd('#ad-placeholder-ayat-after-info', getBannerAdConfig());
         }
-        // [AKHIR IKLAN BARU]
+        // [AKHIR MODIFIKASI]
 
         const surahInfo = allSurahInfo[surahNumber];
         const totalAyahs = ayahCounts[surahNumber];
@@ -483,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         });
                     } else {
-                        wbText += '(Per kata tidak tersedia)\n';
+                        wbwText += '(Per kata tidak tersedia)\n';
                     }
                     parts.push(wbwText);
                 }
@@ -816,10 +817,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // [IKLAN BARU] Panggil fungsi injeksi untuk iklan dinamis Halaman Ayat
         // Kita panggil SETELAH HTML dimasukkan ke DOM
+        // [MODIFIKASI] Menggunakan nama fungsi baru
         if (typeof injectAd === 'function') {
-            injectAd(`#${adPlaceholderMeaningId}`, getBannerAdHTML());
-            injectAd(`#${adPlaceholderAsbabId}`, getNativeAdHTML());
+            injectAd(`#${adPlaceholderMeaningId}`, getBannerAdConfig());
+            injectAd(`#${adPlaceholderAsbabId}`, getNativeAdConfig());
         }
+        // [AKHIR MODIFIKASI]
 
 
         // 10. Muat Giscus secara dinamis SETELAH konten dimasukkan ke DOM
@@ -936,10 +939,12 @@ document.addEventListener('DOMContentLoaded', () => {
             history.pushState(null, '', window.location.pathname);
 
             // [IKLAN BARU] Muat ulang iklan halaman utama saat kembali
+            // [MODIFIKASI] Menggunakan nama fungsi baru
             if (typeof injectAd === 'function') {
-                injectAd('#ad-placeholder-home-top', getBannerAdHTML());
-                injectAd('#ad-placeholder-home-bottom', getNativeAdHTML());
+                injectAd('#ad-placeholder-home-top', getBannerAdConfig());
+                injectAd('#ad-placeholder-home-bottom', getNativeAdConfig());
             }
+            // [AKHIR MODIFIKASI]
         });
 
         // Tombol Tema
@@ -969,10 +974,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 mainTitleEl.classList.remove('hidden');
 
                 // [IKLAN BARU] Muat ulang iklan halaman utama saat kembali
+                // [MODIFIKASI] Menggunakan nama fungsi baru
                 if (typeof injectAd === 'function') {
-                    injectAd('#ad-placeholder-home-top', getBannerAdHTML());
-                    injectAd('#ad-placeholder-home-bottom', getNativeAdHTML());
+                    injectAd('#ad-placeholder-home-top', getBannerAdConfig());
+                    injectAd('#ad-placeholder-home-bottom', getNativeAdConfig());
                 }
+                // [AKHIR MODIFIKASI]
             }
         });
 
