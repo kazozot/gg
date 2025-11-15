@@ -1,5 +1,5 @@
 :root {
-    /* ... (variabel Anda tetap sama) ... */
+    /* Dark Mode (Default) */
     --primary-bg: #f8f9fa;
     --secondary-bg: #ffffff;
     --card-bg: #ffffff;
@@ -13,7 +13,7 @@
 }
 
 body.dark-mode {
-    /* ... (variabel Anda tetap sama) ... */
+    /* Dark Mode */
     --primary-bg: #1a202c;
     --secondary-bg: #2d3748;
     --card-bg: #2d3748;
@@ -47,7 +47,7 @@ body {
     padding: 20px;
 }
 
-/* ... (Navbar, .nav-brand, .nav-menu, .nav-links, .creator-btn, .theme-btn tetap sama) ... */
+/* Navbar */
 .navbar {
     background-color: var(--secondary-bg);
     padding: 1rem 0;
@@ -57,11 +57,13 @@ body {
     top: 0;
     z-index: 1000;
 }
+
 .nav-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .nav-brand {
     font-size: 1.5rem;
     font-weight: 600;
@@ -72,25 +74,30 @@ body {
     font-weight: 400;
     color: var(--accent-green);
 }
+
 .nav-menu {
     display: flex;
     align-items: center;
     gap: 1.5rem;
 }
+
 .nav-links {
     list-style: none;
     display: flex;
     gap: 1.5rem;
 }
+
 .nav-links a {
     text-decoration: none;
     color: var(--text-secondary);
     font-weight: 500;
     transition: color 0.2s;
 }
+
 .nav-links a:hover {
     color: var(--text-primary);
 }
+
 .creator-btn {
     background-color: var(--accent-green);
     color: #fff;
@@ -101,9 +108,11 @@ body {
     font-weight: 600;
     transition: background-color 0.2s;
 }
+
 .creator-btn:hover {
     background-color: #218838;
 }
+
 .theme-btn {
     background: none;
     border: none;
@@ -119,23 +128,22 @@ body {
     stroke: var(--text-primary);
 }
 
-
 /* Main Content */
 .main-title {
     text-align: center;
     margin: 40px 0;
 }
+
 .main-title h1 {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
+
 .main-title p {
     font-size: 1.1rem;
     color: var(--text-secondary);
-    /* Saran: Jika PSI masih mengeluh, ganti 'var(--text-secondary)' 
-       menjadi 'var(--text-primary)' dan tambahkan 'opacity: 0.8;' */
 }
 
 #surah-list {
@@ -143,18 +151,22 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 20px;
 }
+
 .surah-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 15px;
-    cursor: pointer; 
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer; /* Diubah dari file asli */
+    transition: box-shadow 0.2s ease, border-color 0.2s ease; /* Diubah */
 }
+
+/* Dihapus .active dan diganti :hover */
 .surah-card:hover {
      box-shadow: 0 10px 20px var(--shadow-color);
      border-color: var(--accent-green);
 }
+
 .surah-header {
     display: flex;
     align-items: center;
@@ -162,15 +174,12 @@ body {
 }
 
 
-/* BARU: Perbaikan Kontras untuk Aksesibilitas */
 .surah-number {
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    /* background-color: rgba(40, 167, 69, 0.1); */ /* Kontras Rendah */
-    /* color: var(--accent-green); */ /* Kontras Rendah */
-    background-color: var(--accent-green); /* Kontras Tinggi */
-    color: #ffffff; /* Kontras Tinggi */
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--accent-green);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -183,8 +192,7 @@ body {
     text-align: left;
 }
 
-/* BARU: Diubah dari h3 ke h2 untuk Aksesibilitas (Urutan Judul) */
-.surah-info h2 {
+.surah-info h3 {
     color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 600;
@@ -195,6 +203,7 @@ body {
     font-size: 0.9rem;
     margin: 0;
 }
+
 .surah-arabic {
     font-family: 'Amiri', serif;
     font-size: 1.5rem;
@@ -202,16 +211,21 @@ body {
     margin-left: auto;
 }
 
-/* ... (Sisa style Anda dari .dropdown-arrow hingga akhir tetap sama) ... */
+/* Panah dropdown tidak lagi diperlukan di halaman utama */
 .dropdown-arrow {
    display: none;
 }
+
+/* Verse Dropdown tidak lagi diperlukan di halaman utama */
 .verse-dropdown {
     display: none;
 }
 .verse-btn {
     display: none;
 }
+
+
+/* Details Page */
 .back-link {
     display: inline-block;
     margin-bottom: 20px;
@@ -230,10 +244,11 @@ body {
     border-radius: 10px;
     padding: 15px;
     align-self: flex-start;
+    /* Tambahan: agar bisa di-scroll jika terlalu panjang */
     max-height: 80vh; 
     overflow-y: auto;
     position: sticky;
-    top: 100px;
+    top: 100px; /* Jarak dari navbar */
 }
 .sidebar-surah-info {
     padding-bottom: 15px;
@@ -247,6 +262,7 @@ body {
     margin-left: 0;
 }
 #verse-list-items {
+    /* Dihapus max-height dari sini, dipindah ke #verse-list-sidebar */
     overflow-y: auto;
 }
 .verse-list-item {
@@ -273,8 +289,9 @@ body {
 }
 #verse-content-area {
     flex: 1;
-    min-width: 0; 
+    min-width: 0; /* Mencegah flexbox overflow */
 }
+
 .verse-item {
     background-color: var(--secondary-bg);
     padding: 25px;
@@ -292,6 +309,13 @@ body {
     font-weight: 600;
     color: var(--text-primary);
 }
+
+/* [MODIFIKASI] Wrapper untuk tombol header */
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
 .share-btn {
     background: none;
     border: 1px solid var(--border-color);
@@ -299,10 +323,32 @@ body {
     padding: 5px 10px;
     border-radius: 6px;
     cursor: pointer;
+    font-size: 0.9rem; /* Menyamakan font */
 }
+
+/* [KODE BARU] Tombol Copy Teks */
+.copy-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+.copy-btn:hover {
+    background-color: var(--accent-green);
+    color: #fff;
+    border-color: var(--accent-green);
+}
+
+
+/* Sembunyikan h2 lama */
 .verse-item > h2 {
     display: none;
 }
+
 .word-by-word-container {
     display: flex;
     flex-wrap: wrap;
@@ -311,21 +357,25 @@ body {
     margin-bottom: 20px;
     direction: rtl;
 }
+
 .word-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 5px;
 }
+
 .arabic-word {
     font-family: 'Amiri', serif;
     font-size: 1.5rem;
     color: var(--text-primary);
 }
+
 .translation-word {
     font-size: 0.8rem;
     color: var(--text-secondary);
 }
+
 .verse-translation {
     margin-top: 15px;
     padding: 15px;
@@ -338,17 +388,21 @@ body {
     color: var(--text-primary);
     font-style: normal;
 }
+
+
 .asbabun-nuzul {
     margin-top: 20px;
     padding: 15px;
     border-radius: 5px;
     background-color: rgba(40, 167, 69, 0.1);
 }
+
 .asbabun-nuzul h4 {
     color: var(--accent-green);
     margin-bottom: 10px;
     font-size: 1.2rem;
 }
+
 .asbabun-nuzul p {
     color: var(--text-secondary);
     text-align: justify;
@@ -358,9 +412,12 @@ body {
 .asbabun-nuzul p:last-child {
     margin-bottom: 0;
 }
+
+
 .hidden {
     display: none !important;
 }
+
 footer {
     text-align: center;
     padding: 20px;
@@ -370,6 +427,15 @@ footer {
     font-size: 0.9rem;
     border-top: 1px solid var(--border-color);
 }
+
+
+/* --- 
+===============================================
+TAMBAHAN CSS DARI SEMUA LANGKAH SEBELUMNYA
+===============================================
+--- */
+
+/* Gaya untuk Tombol Mode di Sidebar */
 .mode-toggle-sidebar {
     padding: 10px 0;
     margin: 10px 0 15px 0;
@@ -401,6 +467,8 @@ footer {
     color: #fff;
     border-color: var(--accent-green);
 }
+
+/* Penampung untuk setiap blok "Ayat + Arti" */
 .verse-block {
     margin-bottom: 25px;
     padding-bottom: 25px;
@@ -411,6 +479,8 @@ footer {
     margin-bottom: 0;
     padding-bottom: 0;
 }
+
+/* Kontainer untuk Teks Arab Full (Mode 2) */
 .arabic-full-container {
     text-align: right;
     font-family: 'Amiri', serif;
@@ -418,6 +488,7 @@ footer {
     line-height: 2;
     margin-bottom: 10px;
 }
+
 .arabic-full-container .verse-number-badge {
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
@@ -427,21 +498,31 @@ footer {
     line-height: 1;
     vertical-align: middle;
 }
+
+/* --- Logika Sembunyikan/Tampilkan Mode --- */
+
+/* Mode 1: Per Kata (Default) */
 #verse-content-area.mode-wbw .arabic-full-container {
-    display: none; 
+    display: none; /* Sembunyikan Arab full */
 }
 #verse-content-area.mode-wbw .word-by-word-container {
-    display: flex; 
+    display: flex; /* Tampilkan per kata */
 }
+
+/* Mode 2: Full Ayat */
 #verse-content-area.mode-full-arab .word-by-word-container {
-    display: none; 
+    display: none; /* Sembunyikan per kata */
 }
 #verse-content-area.mode-full-arab .arabic-full-container {
-    display: block; 
+    display: block; /* Tampilkan Arab full */
 }
+
+/* --- Gaya Asbabun Nuzul --- */
 .asbabun-nuzul .riwayat-item + .riwayat-item {
     margin-top: 1.5em;
 }
+
+/* --- Tambahan untuk Fitur Share --- */
 .share-btn {
     transition: background-color 0.2s, color 0.2s;
 }
@@ -450,6 +531,8 @@ footer {
     color: #fff;
     border-color: var(--accent-green);
 }
+
+/* Notifikasi Clipboard */
 .clipboard-notification {
     position: fixed;
     bottom: 20px;
@@ -464,10 +547,19 @@ footer {
     transition: opacity 0.5s, bottom 0.5s;
     pointer-events: none;
 }
+
 .clipboard-notification.show {
     opacity: 1;
     bottom: 30px;
 }
+
+/* --- 
+===============================================
+TAMBAHAN CSS BARU UNTUK PERMINTAAN INI
+===============================================
+--- */
+
+/* --- Gaya untuk Info Surah (BARU) --- */
 .surah-info-box {
     background-color: var(--secondary-bg);
     border: 1px solid var(--border-color);
@@ -482,6 +574,7 @@ footer {
     color: var(--accent-green);
     margin-bottom: 10px;
 }
+/* Style untuk tag HTML dari surah-info.json */
 .surah-info-box p, .surah-info-box h1, .surah-info-box h3, .surah-info-box h4 {
     color: var(--text-secondary);
     margin-bottom: 1rem;
@@ -491,6 +584,8 @@ footer {
      color: var(--text-primary);
      margin-top: 1.5rem;
 }
+
+/* --- Gaya untuk Placeholder Konten Ayat (BARU) --- */
 .verse-item-placeholder {
     padding: 40px;
     text-align: center;
@@ -500,34 +595,49 @@ footer {
     border-radius: 10px;
     font-style: italic;
 }
+
+/* --- Gaya untuk Riwayat 'Tidak Ditemukan' (BARU) --- */
 .asbabun-nuzul .no-history {
     color: var(--text-secondary);
     font-style: italic;
     text-align: left;
-    margin-bottom: 0;
+    margin-bottom: 0; /* Hapus margin bottom standar dari <p> */
 }
+
+/* --- Penanda Ayat di Sidebar (BARU) --- */
 .verse-list-item.has-asbab {
+    /* Sedikit menonjolkan ayat yang ada riwayatnya */
     font-weight: 600;
     border-left: 3px solid var(--accent-green);
 }
 .verse-list-item.has-asbab:hover {
     background-color: var(--sidebar-active-bg);
 }
+
+/* Tampilan 'Per Kata Tidak Tersedia' */
 .word-by-word-container .no-history {
     width: 100%;
     text-align: center;
     font-style: italic;
     color: var(--text-secondary);
-    direction: ltr;
+    direction: ltr; /* Pastikan teks ini LTR */
 }
+
+/* --- Penyesuaian untuk Tampilan Surah --- */
+
+/* Beri tanda pada surah yang punya riwayat di halaman utama */
 .surah-card.has-asbab .surah-info p {
     font-weight: 600;
     color: var(--text-primary);
 }
+
+/* Sembunyikan tombol mode dan daftar ayat jika surah tidak punya riwayat */
 #verse-list-sidebar.sidebar-empty .mode-toggle-sidebar,
 #verse-list-sidebar.sidebar-empty #verse-list-items {
     display: none;
 }
+
+/* Gaya untuk Placeholder "Tidak Ada Asbabun Nuzul" */
 .verse-item-placeholder {
     padding: 40px;
     text-align: center;
@@ -537,79 +647,127 @@ footer {
     border-radius: 10px;
     font-style: italic;
 }
+
+/* Tampilan 'Per Kata Tidak Tersedia' */
 .word-by-word-container .no-history {
     width: 100%;
     text-align: center;
     font-style: italic;
     color: var(--text-secondary);
-    direction: ltr; 
+    direction: ltr; /* Pastikan teks ini LTR */
 }
+
+/* Tampilan 'Riwayat Tidak Ditemukan' */
 .asbabun-nuzul .no-history {
     color: var(--text-secondary);
     font-style: italic;
     text-align: left;
     margin-bottom: 0;
 }
+
+/* (Tambahkan ini di file style.css Anda) */
+
+/* Memberi jarak antar blok ayat individual */
 .verse-block-individual {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
 }
+
+/* Judul untuk "Ayat 1", "Ayat 2", dst. */
 .individual-ayah-title {
     font-size: 1.25rem;
     color: var(--text-color);
     margin-bottom: 1rem;
     font-weight: 600;
 }
+
+/* Garis pemisah horizontal antar ayat */
 hr.ayah-divider {
     border: none;
     height: 1px;
     background-color: var(--border-color-light);
     margin: 2rem 0;
 }
+
+/* Sembunyikan garis pemisah terakhir */
 .verse-block-individual:last-of-type + hr.ayah-divider {
     display: none;
 }
+
+/* Sedikit penyesuaian pada blok asbabun nuzul */
 .asbabun-nuzul {
     margin-top: 2rem;
     padding-top: 1rem;
     border-top: 2px solid var(--primary-color);
 }
+
+
+/* ================================================== */
+/* === GAYA TAMBAHAN UNTUK HALAMAN BIOGRAFI === */
+/* ================================================== */
+
+/* Gaya untuk link "Biografi Penulis" di Navbar */
 .nav-link-item {
     text-decoration: none;
     color: var(--text-secondary);
     font-weight: 500;
     transition: color 0.2s;
-    font-size: 0.95rem; 
+    font-size: 0.95rem; /* Menyesuaikan ukuran font */
 }
 .nav-link-item:hover {
     color: var(--text-primary);
 }
+
+/* [MODIFIKASI BARU] Gaya untuk link "Dukung Kreator" */
+.nav-link-creator {
+    background-color: #e33629; /* Perkiraan warna Trakteer */
+    color: #ffffff !important; /* Paksa warna putih */
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+.nav-link-creator:hover {
+    background-color: #c92c21; /* Lebih gelap saat hover */
+    color: #ffffff !important; /* Tetap putih */
+}
+/* [AKHIR MODIFIKASI] */
+
+
+/* Kontainer utama untuk konten biografi */
 .biography-content {
     background-color: var(--secondary-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    padding: 25px 30px; 
+    padding: 25px 30px; /* Padding sedikit lebih besar */
     margin-top: 20px;
 }
+
+/* Judul Utama Biografi */
 .biography-content h1 {
     font-size: 2rem;
     font-weight: 700;
     color: var(--accent-green);
     margin-bottom: 15px;
     line-height: 1.3;
-    text-align: left; 
+    text-align: left; /* Teks rata kiri */
 }
+
+/* Sub-judul Bagian (Bagian I, Bagian II, dst.) */
 .biography-content h2 {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-top: 30px;
+    margin-top: 30px; /* Jarak atas lebih besar */
     margin-bottom: 15px;
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 5px;
     text-align: left;
 }
+
+/* Sub-sub-judul (Nasab, Nama, dll.) */
 .biography-content h3 {
     font-size: 1.25rem;
     font-weight: 600;
@@ -618,6 +776,8 @@ hr.ayah-divider {
     margin-bottom: 10px;
     text-align: left;
 }
+
+/* Judul Tabel */
 .biography-content h4 {
     font-size: 1.1rem;
     font-weight: 600;
@@ -626,14 +786,18 @@ hr.ayah-divider {
     margin-bottom: 10px;
     text-align: left;
 }
+
+/* Paragraf Teks Biografi */
 .biography-content p {
     color: var(--text-secondary);
-    text-align: justify;
+    text-align: justify; /* Teks rata kanan-kiri */
     line-height: 1.8;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.25rem; /* Jarak antar paragraf */
 }
+
+/* Daftar (list) seperti guru-guru */
 .biography-content ul, .biography-content ol {
-    padding-left: 25px;
+    padding-left: 25px; /* Indentasi list */
     margin-bottom: 1.25rem;
 }
 .biography-content li {
@@ -645,12 +809,17 @@ hr.ayah-divider {
 .biography-content li strong {
     color: var(--text-primary);
 }
+
+/* Garis pemisah horizontal */
 .biography-content hr {
     border: none;
     height: 1px;
     background-color: var(--border-color);
     margin: 2.5rem 0;
 }
+
+
+/* Gaya untuk tabel kronologi */
 .biography-content table {
     width: 100%;
     border-collapse: collapse;
@@ -658,6 +827,7 @@ hr.ayah-divider {
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
 }
+
 .biography-content th, 
 .biography-content td {
     border: 1px solid var(--border-color);
@@ -666,14 +836,20 @@ hr.ayah-divider {
     color: var(--text-secondary);
     vertical-align: top;
 }
+
 .biography-content th {
     background-color: var(--primary-bg);
     color: var(--text-primary);
     font-weight: 600;
 }
+
+/* --- Gaya Catatan Kaki (Footnote) --- */
+
+/* Superscript di dalam teks */
 .biography-content sup {
-    line-height: 0;
+    line-height: 0; /* Mencegah spasi baris bertambah */
 }
+
 .biography-content sup a {
     text-decoration: none;
     color: var(--accent-green);
@@ -684,10 +860,13 @@ hr.ayah-divider {
 .biography-content sup a:hover {
     text-decoration: underline;
 }
+
+/* Daftar Catatan Kaki di bagian bawah */
 .footnote-list {
-    padding-left: 20px;
+    padding-left: 20px; /* Indentasi standar untuk <ol> */
     margin-top: 1.5rem;
 }
+
 .footnote-list li {
     margin-bottom: 12px;
     color: var(--text-secondary);
@@ -695,34 +874,180 @@ hr.ayah-divider {
     line-height: 1.6;
     text-align: left;
 }
+
+/* Tautan di dalam daftar catatan kaki */
 .footnote-list li a {
     color: var(--accent-green);
-    word-break: break-all;
+    word-break: break-all; /* Agar URL yang sangat panjang tidak merusak layout */
 }
 
+/* ... (SEMUA KODE CSS ANDA YANG SUDAH ADA) ... */
 
-/* BARU: Style untuk Placeholder Pemuatan (CLS) */
-.surah-list-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    grid-column: 1 / -1; /* Agar span penuh di grid */
-    min-height: 300px; /* Memberi ruang agar footer tidak melompat */
+/* --- [TAMBAHAN] Gaya untuk Pemilihan Tafsir --- */
+.tafsir-select-sidebar {
+    padding: 10px 0;
+    margin-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+.tafsir-select-sidebar p {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+.tafsir-select-sidebar select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-bg); /* Berbeda dari mode-btn agar terlihat seperti dropdown */
+    color: var(--text-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+}
+.tafsir-select-sidebar select:hover {
+    border-color: var(--accent-green);
+}
+.tafsir-select-sidebar select option {
+    background-color: var(--secondary-bg);
+    color: var(--text-primary);
+}
+
+/* --- [TAMBAHAN] Gaya untuk Konten Tafsir --- */
+.tafsir-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-color);
+}
+.tafsir-container h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+.verse-tafsir {
+    font-size: 0.95rem;
     color: var(--text-secondary);
+    line-height: 1.8;
+    text-align: justify;
+}
+.verse-tafsir.no-tafsir {
+    font-style: italic;
+}
+/* Gaya untuk footnote dari tafsir Kemenag */
+.verse-tafsir sup {
+    font-size: 0.7em;
+    color: var(--accent-green);
+    vertical-align: top;
+    padding: 0 2px;
+}
+/* --- [AKHIR TAMBAHAN] --- */
+
+
+
+/* ================================================== */
+/* === [KODE BARU] CSS UNTUK MODAL COPY === */
+/* ================================================== */
+.copy-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
 }
 
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--border-color);
-    border-top-color: var(--accent-green);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+.copy-modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--secondary-bg);
+    color: var(--text-primary);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 20px var(--shadow-color);
+    width: 90%;
+    max-width: 500px;
+    z-index: 2001;
+    overflow: hidden;
+}
+
+.copy-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+.copy-modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+.copy-modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+}
+.copy-modal-close-btn:hover {
+    color: var(--text-primary);
+}
+
+.copy-modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+.copy-modal-body p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
     margin-bottom: 15px;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+.copy-options-group {
+    margin-bottom: 20px;
+}
+.copy-options-group strong {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    display: block;
+}
+.copy-options-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+.copy-options-group label input {
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.copy-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-color);
+    text-align: right;
+}
+.copy-modal-confirm-btn {
+    background-color: var(--accent-green);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+.copy-modal-confirm-btn:hover {
+    background-color: #218838;
 }
