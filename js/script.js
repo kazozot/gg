@@ -33,6 +33,7 @@ async function handleShare(surahNumber, ayahNumber, surahLatinName) {
     }
 }
 
+
 // --- Event Listener Utama ---
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -49,28 +50,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const bodyEl = document.body;
     const surahInfoBoxEl = document.getElementById('surah-info-box');
 
+    // --- [KODE BARU] Elemen DOM untuk Modal Copy ---
+    const modalBackdrop = document.getElementById('copy-modal-backdrop');
+    const modalContent = document.getElementById('copy-modal-content');
+    const modalTitle = document.getElementById('copy-modal-title');
+    const modalCloseBtn = document.getElementById('copy-modal-close');
+    const modalConfirmBtn = document.getElementById('copy-modal-confirm');
+    let currentCopyListener = null; // Untuk menyimpan listener tombol konfirmasi
+    // --- [AKHIR KODE BARU] ---
+
+
+    // --- [MODIFIKASI BARU] Variabel untuk Tafsir ---
+    // TAFSIR_SOURCES dan DEFAULT_TAFSIR diambil dari config.js
+    let currentTafsirId = DEFAULT_TAFSIR; // Akan di-override oleh localStorage di initializeApp
+    // --- [AKHIR MODIFIKASI] ---
+
     // --- Variabel Global untuk Data ---
-    // (Data diasumsikan ada dari skrip yang di-defer)
+    // const allSurahInfo -> dari surah-info-data.js
+    // const allAyahMeta  -> dari quran-metadata.js
+    // const DB           -> dari asbabun-nuzul-data.js
+    // const ENABLE_COMMENTS -> dari config.js
+    // const ENABLE_ADS -> dari config.js (BARU)
+    // const TAFSIR_KEMENAG, TAFSIR_JALALAYN, dll -> dari js/data/
     
-    let ayahCounts = {}; 
-    let asbabDataMap = new Map(); 
-    let asbabDataBySurah = new Map();
+    let ayahCounts = {}; // Cache untuk jumlah ayat per surah
+    let asbabDataMap = new Map(); // Peta untuk mencari Asbabun Nuzul by key "surah-verseKey"
+    let asbabDataBySurah = new Map(); // Peta untuk mencari Asbabun Nuzul by surahNum
     let surahArabicNameMap = new Map(); 
 
     // --- Fungsi Inisialisasi Aplikasi ---
     function initializeApp() {
-        // Cek jika data sudah dimuat (penting karena 'defer')
-        if (typeof allSurahInfo === 'undefined' || typeof allAyahMeta === 'undefined' || typeof DB === 'undefined') {
-            console.error("Data inti (surah/ayah/asbabun nuzul) gagal dimuat.");
-            if (surahListEl) {
-                 // Hapus placeholder dan tampilkan error
-                 surahListEl.innerHTML = '<p style="text-align: center; color: red;">Gagal memuat data. Silakan muat ulang halaman.</p>';
-            }
-            return; 
-        }
-
         processData();
+
+        // Terapkan mode tampilan (view mode) saat aplikasi dimuat
         applyViewMode(localStorage.getItem('viewMode') || 'wbw'); 
+
+        // --- [MODIFIKASI BARU] Muat Tafsir pilihan ---
+        currentTafsirId = localStorage.getItem('currentTafsir') || DEFAULT_TAFSIR;
+        // --- [AKHIR MODIFIKASI] ---
 
         const isDeepLink = checkURLParams(); 
         if (!isDeepLink) {
@@ -81,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Fungsi untuk memproses data mentah menjadi cache ---
     function processData() {
-        // 1. Hitung jumlah ayat
+        // 1. Hitung jumlah ayat (dari quran-ayahs-data.js)
         for (const [verseKey, ayahData] of Object.entries(allAyahMeta)) {
             const surahNum = ayahData.surah_number;
             if (!ayahCounts[surahNum]) {
@@ -90,10 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ayahCounts[surahNum]++;
         }
         
-        // 2. Buat Peta (Map) untuk data Asbabun Nuzul
+        // 2. Buat Peta (Map) untuk data Asbabun Nuzul (dari asbabun-nuzul-data.js)
         DB.forEach(item => {
             const surahNum = item.surahNumber;
-            const verseKey = String(item.verseNumber); 
+            const verseKey = String(item.verseNumber); // "2", "1-8", "10-13"
             
             const mapKey = `${surahNum}-${verseKey}`;
             asbabDataMap.set(mapKey, item);
@@ -139,25 +156,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Fungsi Tampil Daftar Surah (Menampilkan SEMUA 114 Surah) ---
     const displaySurahList = () => {
-        surahListEl.innerHTML = ''; // Hapus placeholder pemuatan
+        surahListEl.innerHTML = '';
         
+        // [IKLAN BARU] Panggil fungsi injeksi untuk iklan Halaman Utama
+        // Kita panggil fungsi dari ad-injector.js
+        if (typeof injectAd === 'function') {
+            injectAd('#ad-placeholder-home-top', getBannerAdHTML());
+            injectAd('#ad-placeholder-home-bottom', getNativeAdHTML());
+        }
+        // [AKHIR IKLAN BARU]
+
+        // Menggunakan allSurahInfo sebagai basis untuk 114 surah
         Object.keys(allSurahInfo).sort((a, b) => parseInt(a) - parseInt(b)).forEach(surahKey => {
             const surahNumber = parseInt(surahKey);
             const meta = allSurahInfo[surahNumber];
-            const totalAyahs = ayahCounts[surahNumber] || 0; 
-            const arabicName = surahArabicNameMap.get(surahNumber) || meta.surah_name;
-            const hasAsbab = asbabDataBySurah.has(surahNumber); 
+            const totalAyahs = ayahCounts[surahNumber] || 0; // Ambil total ayat dari cache
+            const arabicName = surahArabicNameMap.get(surahNumber) || meta.surah_name; // Ambil nama Arab dari DB jika ada
+            const hasAsbab = asbabDataBySurah.has(surahNumber); // Cek apakah ada data di DB
 
             const card = document.createElement('div');
             card.className = `surah-card ${hasAsbab ? 'has-asbab' : ''}`;
             card.dataset.surah = surahNumber;
             
-            // BARU: Menggunakan <h2> bukan <h3> untuk Aksesibilitas
             card.innerHTML = `
                 <div class="surah-header">
                     <div class="surah-number">${surahNumber}</div>
                     <div class="surah-info">
-                        <h2>${meta.surah_name}</h2>
+                        <h3>${meta.surah_name}</h3>
                         <p>${totalAyahs} Ayat ${hasAsbab ? '• (Ada Riwayat)' : ''}</p>
                     </div>
                     <div class="surah-arabic">${arabicName}</div>
@@ -181,6 +206,13 @@ document.addEventListener('DOMContentLoaded', () => {
         surahListEl.classList.add('hidden');
         mainTitleEl.classList.add('hidden');
         verseDetailsPageEl.classList.remove('hidden');
+        
+        // [IKLAN BARU] Panggil fungsi injeksi untuk iklan Halaman Ayat (Statis)
+        if (typeof injectAd === 'function') {
+            injectAd('#ad-placeholder-ayat-before-info', getBannerAdHTML());
+            injectAd('#ad-placeholder-ayat-after-info', getBannerAdHTML());
+        }
+        // [AKHIR IKLAN BARU]
 
         const surahInfo = allSurahInfo[surahNumber];
         const totalAyahs = ayahCounts[surahNumber];
@@ -191,7 +223,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const infoHTML = surahInfo.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         surahInfoBoxEl.innerHTML = `<h2>${surahInfo.surah_name}</h2>${infoHTML}`;
 
-        // 2. Buat Sidebar
+        // --- [MODIFIKASI BARU] Buat HTML untuk Pilihan Tafsir ---
+        let tafsirOptionsHTML = '';
+        if (typeof TAFSIR_SOURCES !== 'undefined') {
+            for (const [id, tafsir] of Object.entries(TAFSIR_SOURCES)) {
+                tafsirOptionsHTML += `<option value="${id}">${tafsir.name}</option>`;
+            }
+        }
+        // --- [AKHIR MODIFIKASI] ---
+
+        // 2. Buat Sidebar [MODIFIKASI: Menambahkan dropdown tafsir]
         verseListSidebarEl.innerHTML = `
             <div class="sidebar-surah-info">
                 <div class="surah-info">
@@ -206,10 +247,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="mode-btn" id="btn-mode-wbw">Per Kata</button>
                 <button class="mode-btn" id="btn-mode-full-arab">Arab & Arti</button>
             </div>
+
+            <div class="tafsir-toggle-sidebar">
+                <p>Pilih Tafsir:</p>
+                <select id="tafsir-select">
+                    ${tafsirOptionsHTML}
+                </select>
+            </div>
             <div id="verse-list-items"></div>
         `;
 
+        // --- [MODIFIKASI BARU] Set value dropdown & tambahkan listener ---
+        const tafsirSelectEl = document.getElementById('tafsir-select');
+        if (tafsirSelectEl) {
+            tafsirSelectEl.value = currentTafsirId;
+            tafsirSelectEl.addEventListener('change', (e) => {
+                currentTafsirId = e.target.value;
+                localStorage.setItem('currentTafsir', currentTafsirId);
+                
+                // Muat ulang konten ayat yang sedang aktif
+                const activeVerseBtn = verseListSidebarEl.querySelector('.verse-list-item.active');
+                if (activeVerseBtn) {
+                    displaySingleVerse(surahNumber, activeVerseBtn.dataset.versekey);
+                }
+            });
+        }
+        // --- [AKHIR MODIFIKASI] ---
+
+        // Panggil fungsi untuk setup listener tombol mode
         setupModeToggleListeners();
+        // Terapkan mode yang tersimpan saat sidebar dibuat
         applyViewMode(localStorage.getItem('viewMode') || 'wbw');
 
         const verseListItemsContainer = verseListSidebarEl.querySelector('#verse-list-items');
@@ -218,23 +285,27 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- KASUS 1: SURAH MEMILIKI ASBABUN NUZUL ---
             verseListSidebarEl.classList.remove('sidebar-empty');
             
+            // 3. Sortir ayat
             ayahEntries.sort((a, b) => getSortableVerseNum(a.verseNumber) - getSortableVerseNum(b.verseNumber));
 
+            // 4. Isi daftar ayat di sidebar HANYA dengan ayat yg ada riwayat
             let verseListHTML = '';
             ayahEntries.forEach(item => {
-                const verseKey = String(item.verseNumber);
+                const verseKey = String(item.verseNumber); // "2" atau "1-8"
                 const hasHistory = Array.isArray(item.history) && item.history.length > 0;
                 const asbabClass = hasHistory ? 'has-asbab' : '';
                 verseListHTML += `<button class="verse-list-item ${asbabClass}" data-versekey="${verseKey}">Ayat ${verseKey}</button>`;
             });
             verseListItemsContainer.innerHTML = verseListHTML;
 
+            // 5. Tambahkan event listener ke setiap tombol ayat
             verseListItemsContainer.querySelectorAll('.verse-list-item').forEach(btn => {
                 btn.addEventListener('click', () => {
                     displaySingleVerse(surahNumber, btn.dataset.versekey);
                 });
             });
 
+            // 6. Tampilkan placeholder atau ayat awal (jika dari deep link)
             if (initialAyahKey) {
                 displaySingleVerse(surahNumber, initialAyahKey);
             } else {
@@ -259,6 +330,47 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
+    // --- [FUNGSI BARU] Helper untuk memproses teks tafsir & footnote ---
+    /**
+     * Memproses entri tafsir untuk memisahkan teks utama dan catatan kaki.
+     * @param {object} tafsirEntry - Objek dari TAFSIR_KEMENAG[key], misal {t: "...", f: {...}}
+     * @returns {object} - Objek {main: "teks utama", notes: "html catatan kaki"}
+     */
+    function processTafsirText(tafsirEntry) {
+        if (!tafsirEntry || !tafsirEntry.t) {
+            return { main: "<i>Tafsir tidak ditemukan.</i>", notes: "" };
+        }
+
+        let mainText = tafsirEntry.t;
+        const footnotes = tafsirEntry.f || {};
+        let footnoteStrings = [];
+        let footnoteCounter = 0;
+
+        // Regex untuk mencari tag <sup foot_note="xxxxx">...</sup>
+        const supRegex = /<sup foot_note="(\d+)">.*?<\/sup>/g;
+
+        mainText = mainText.replace(supRegex, (match, footNoteId) => {
+            footnoteCounter++;
+            const footnoteText = footnotes[footNoteId];
+            if (footnoteText) {
+                // Tambahkan ke array untuk ditampilkan di bawah
+                footnoteStrings.push(`<sup>[${footnoteCounter}]</sup> ${footnoteText}`);
+            }
+            // Ganti tag di teks utama dengan nomor
+            return `<sup>[${footnoteCounter}]</sup>`;
+        });
+
+        // Gabungkan semua footnote
+        const notesHTML = footnoteStrings.join('<br>');
+
+        return {
+            main: mainText,
+            notes: notesHTML
+        };
+    }
+    // --- [AKHIR FUNGSI BARU] ---
+
+
     // --- [FUNGSI BARU] Helper untuk menerapkan mode tampilan ---
     function applyViewMode(mode) {
         const btnWbw = document.getElementById('btn-mode-wbw');
@@ -270,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (btnFullArab) btnFullArab.classList.add('active');
             if (btnWbw) btnWbw.classList.remove('active');
         } else {
+            // Default ke 'wbw' (word-by-word)
             verseContentAreaEl.classList.remove('mode-full-arab');
             verseContentAreaEl.classList.add('mode-wbw');
             if (btnWbw) btnWbw.classList.add('active');
@@ -299,13 +412,172 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- (Fungsi ini dikosongkan di file Anda, sekarang kita isi) ---
     function setupModeButtons() {
-        // Logika dipindah ke setupModeToggleListeners() 
+        // Dibuat kosong karena logika dipindah ke setupModeToggleListeners() 
+        // dan dipanggil dari showVersePage() agar elemennya pasti ada.
     }
 
-    // --- (FUNGSI INI TIDAK PERLU DIUBAH) ---
+
+    // --- [KODE BARU] Fungsi untuk Modal Copy ---
+    function openCopyModal(surahNumber, verseKey, surahLatinName, asbabData) {
+        modalTitle.textContent = `Copy: ${surahLatinName} Ayat ${verseKey}`;
+        
+        // Hapus listener lama jika ada (penting!)
+        if (currentCopyListener) {
+            modalConfirmBtn.removeEventListener('click', currentCopyListener);
+        }
+        
+        // Buat listener baru dengan data yang relevan
+        currentCopyListener = () => {
+            handleConfirmCopy(surahNumber, verseKey, surahLatinName, asbabData);
+        };
+        
+        // Tambahkan listener baru
+        modalConfirmBtn.addEventListener('click', currentCopyListener);
+        
+        // Tampilkan modal
+        modalBackdrop.classList.remove('hidden');
+        modalContent.classList.remove('hidden');
+    }
+
+    function closeCopyModal() {
+        modalBackdrop.classList.add('hidden');
+        modalContent.classList.add('hidden');
+        // Hapus listener setelah ditutup
+        if (currentCopyListener) {
+            modalConfirmBtn.removeEventListener('click', currentCopyListener);
+            currentCopyListener = null;
+        }
+    }
+
+    async function handleConfirmCopy(surahNumber, verseKey, surahLatinName, asbabData) {
+        // 1. Dapatkan Opsi dari Modal
+        const includeArabicFull = document.getElementById('copy-arabic-full').checked;
+        const includeWbW = document.getElementById('copy-wbw').checked;
+        const includeSelectedTafsir = document.getElementById('copy-selected-tafsir').checked;
+        const includeAllTafsirs = document.getElementById('copy-all-tafsirs').checked;
+        const includeAsbab = document.getElementById('copy-asbab').checked;
+
+        let parts = []; // Array untuk menampung semua bagian teks
+        parts.push(`Bismillāhir-raḥmānin-raḥīm`);
+        parts.push(`Q.S. ${surahNumber} (${surahLatinName}): Ayat ${verseKey}`);
+        parts.push('----');
+
+        const individualVerses = asbabData.verses;
+
+        // 2. Proses Setiap Ayat (jika format baru)
+        if (Array.isArray(individualVerses) && individualVerses.length > 0) {
+            individualVerses.forEach(verseData => {
+                const { ayah, arabicText, wordByWord } = verseData;
+                parts.push(`\n[ AYAT ${ayah} ]\n`);
+
+                // 3. Tambahkan Teks Arab
+                if (includeArabicFull) {
+                    const cleanArabic = arabicText.replace(/<[^>]+>/g, ''); // Hapus HTML
+                    parts.push(`${cleanArabic.trim()} (${ayah})\n`);
+                } else if (includeWbW) {
+                    let wbwText = 'Teks Per Kata:\n';
+                    if (Array.isArray(wordByWord) && wordByWord.length > 0) {
+                        wordByWord.forEach(word => {
+                            if (word.translation) { // Hanya tambahkan jika ada terjemahan
+                                wbwText += `${word.arab} : ${word.translation}\n`;
+                            }
+                        });
+                    } else {
+                        wbText += '(Per kata tidak tersedia)\n';
+                    }
+                    parts.push(wbwText);
+                }
+
+                // 4. Tambahkan Terjemahan/Tafsir
+                if (includeAllTafsirs) {
+                    parts.push('\n--- SEMUA TAFSIR ---');
+                    for (const [id, source] of Object.entries(TAFSIR_SOURCES)) {
+                        const tafsirData = source.data;
+                        const tafsirName = source.name;
+                        const tafsirKey = `${surahNumber}:${ayah}`;
+                        parts.push(`\n[${tafsirName}]`);
+                        
+                        if (tafsirData && tafsirData[tafsirKey]) {
+                            const processed = processTafsirText(tafsirData[tafsirKey]);
+                            // Hapus semua tag HTML untuk copy plain text
+                            let main = processed.main.replace(/<[^>]+>/g, ' ').replace(/ +/g, ' ').trim();
+                            let notes = processed.notes.replace(/<[^>]+>/g, ' ').replace(/ +/g, ' ').trim();
+                            parts.push(main);
+                            if (notes) {
+                                parts.push(`\nCatatan: ${notes}`);
+                            }
+                        } else {
+                            parts.push('(Tafsir tidak ditemukan.)');
+                        }
+                    }
+                } else if (includeSelectedTafsir) {
+                    const activeTafsirSource = TAFSIR_SOURCES[currentTafsirId];
+                    const tafsirData = activeTafsirSource.data;
+                    const tafsirName = activeTafsirSource.name;
+                    const tafsirKey = `${surahNumber}:${ayah}`;
+                    parts.push(`\n--- TAFSIR TERPILIH (${tafsirName}) ---`);
+                    
+                    if (tafsirData && tafsirData[tafsirKey]) {
+                        const processed = processTafsirText(tafsirData[tafsirKey]);
+                        let main = processed.main.replace(/<[^>]+>/g, ' ').replace(/ +/g, ' ').trim();
+                        let notes = processed.notes.replace(/<[^>]+>/g, ' ').replace(/ +/g, ' ').trim();
+                        parts.push(main);
+                        if (notes) {
+                            parts.push(`\nCatatan: ${notes}`);
+                        }
+                    } else {
+                        parts.push('(Tafsir tidak ditemukan.)');
+                    }
+                }
+            }); // Akhir loop forEach verse
+        } else {
+            // Fallback untuk format data lama (jika diperlukan)
+             parts.push("\n(Data ayat menggunakan format gabungan, salin manual dari halaman)");
+        }
+
+        // 5. Tambahkan Asbabun Nuzul
+        if (includeAsbab) {
+            parts.push(`\n----\nASBABUN NUZUL (untuk Ayat ${verseKey})\n----`);
+            const historyArr = asbabData.history;
+            if (historyArr && Array.isArray(historyArr) && historyArr.length > 0) {
+                historyArr.forEach(riwayat => {
+                    const cleanRiwayat = riwayat
+                        .replace(/\*\*(.*?)\*\*/g, '$1') // Hapus markdown bold
+                        .replace(/<br>/g, '\n'); // Ganti <br> dengan newline
+                    parts.push(cleanRiwayat + '\n');
+                });
+            } else {
+                parts.push('(Tidak ada riwayat asbabun nuzul.)');
+            }
+        }
+
+        // 6. Tambahkan Atribusi
+        const siteName = document.querySelector('.nav-brand').textContent.trim();
+        const siteUrl = window.location.origin + window.location.pathname;
+        const attribution = `\n\n----\ndapatkan asbabun nuzul hanya di ${siteName} ${siteUrl}`;
+        parts.push(attribution);
+
+        // 7. Salin ke Clipboard
+        try {
+            await navigator.clipboard.writeText(parts.join('\n'));
+            showClipboardNotification('Teks telah disalin!');
+        } catch (err) {
+            console.error('Gagal menyalin:', err);
+            showClipboardNotification('Gagal menyalin teks.');
+        }
+
+        // 8. Tutup Modal
+        closeCopyModal();
+    }
+    // --- [AKHIR KODE BARU] ---
+
+
+    // --- [FUNGSI MODIFIKASI BESAR] ---
+    // Fungsi ini diubah untuk mengambil terjemahan dari sumber data tafsir yang dipilih
+    // dan memproses catatan kaki.
     const displaySingleVerse = (surahNumber, verseKey) => {
         
-        verseContentAreaEl.innerHTML = ''; 
+        verseContentAreaEl.innerHTML = ''; // Kosongkan area konten
 
         // 1. Set tombol aktif di sidebar
         verseListSidebarEl.querySelectorAll('.verse-list-item').forEach(btn => {
@@ -314,6 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeBtn = verseListSidebarEl.querySelector(`.verse-list-item[data-versekey='${verseKey}']`);
         if(activeBtn) {
             activeBtn.classList.add('active');
+            // Scroll tombol aktif ke tengah sidebar jika perlu
             activeBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
@@ -326,7 +599,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const surahLatinName = allSurahInfo[surahNumber].surah_name;
+        // Ambil riwayat dari level atas
         const historyArr = asbabData.history;
+        // Ambil array verses (DATA BARU)
         const individualVerses = asbabData.verses;
 
         // 3. Buat Kontainer Utama
@@ -334,26 +609,66 @@ document.addEventListener('DOMContentLoaded', () => {
         verseItemContainer.className = 'verse-item';
         let contentHTML = '';
 
-        // 4. Buat Header
+        // 4. [MODIFIKASI] Buat Header (dengan tombol Share & Copy)
         contentHTML += `
             <div class="verse-header">
                 <div class="verse-title">Surah ${surahLatinName}: Ayat ${verseKey}</div>
-                <button class="share-btn">Share</button>
+                <div class="header-buttons">
+                    <button class="share-btn">Share Link</button>
+                    <button class="copy-btn">Copy Teks</button>
+                </div>
             </div>
         `;
+        // --- [AKHIR MODIFIKASI] ---
 
         // 5. (LOGIKA BARU) Cek apakah data terpisah atau gabungan
         let individualAyahsHTML = '';
+
+        // --- [MODIFIKASI BARU] Dapatkan data tafsir yang aktif ---
+        const activeTafsirSource = (typeof TAFSIR_SOURCES !== 'undefined' && TAFSIR_SOURCES[currentTafsirId]) 
+            ? TAFSIR_SOURCES[currentTafsirId] 
+            : null;
+        const tafsirData = activeTafsirSource ? activeTafsirSource.data : null;
+        // Ambil nama dari config (karena sudah diubah di sana)
+        const tafsirName = activeTafsirSource ? activeTafsirSource.name : "Tafsir";
+        // --- [AKHIR MODIFIKASI] ---
         
         if (Array.isArray(individualVerses) && individualVerses.length > 0) {
             // --- KASUS A: DATA TERPISAH (FORMAT BARU) ---
+            // Loop melalui setiap ayat di dalam "verses"
             individualVerses.forEach(verseData => {
-                const { ayah, arabicText, translationText, wordByWord } = verseData;
+                const { ayah, arabicText, wordByWord } = verseData; // Hapus translationText bawaan
 
+                // --- [MODIFIKASI BARU] Ambil Teks Tafsir ---
+                const tafsirKey = `${surahNumber}:${ayah}`;
+                let translationHTML = '';
+                let footnotesHTML = '';
+
+                if (tafsirData && tafsirData[tafsirKey]) {
+                    const tafsirEntry = tafsirData[tafsirKey];
+                    const processedTafsir = processTafsirText(tafsirEntry); // Panggil helper baru
+                    
+                    translationHTML = processedTafsir.main;
+                    if (processedTafsir.notes) {
+                        footnotesHTML = `<div class="verse-footnotes"><h4>Catatan Tafsir:</h4>${processedTafsir.notes}</div>`;
+                    }
+                } else {
+                    // Fallback jika tafsir tidak ditemukan
+                    translationHTML = `<i>Tafsir (${tafsirName}) untuk ayat ${ayah} tidak ditemukan.</i>`;
+                    // Coba fallback ke terjemahan default jika ada
+                    if (verseData.translationText) {
+                         translationHTML += `<br><br><b>Terjemahan Bawaan:</b> "${verseData.translationText}"`;
+                    }
+                }
+                // --- [AKHIR MODIFIKASI] ---
+
+
+                // Buat HTML Word-by-Word
                 let wbwHTML = '<p class="no-history">Terjemahan per kata tidak tersedia.</p>';
                 if (Array.isArray(wordByWord) && wordByWord.length > 0) {
                     wbwHTML = wordByWord.map(word => {
                         const translation = word.translation ? `<div class="translation-word">${word.translation}</div>` : '';
+                        // Tambahkan kelas khusus untuk tanda waqaf (jika tidak ada terjemahan)
                         const waqafClass = !word.translation ? ' waqaf-sign' : '';
                         
                         return `
@@ -365,6 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }).join('');
                 }
 
+                // --- Gabungkan HTML untuk SATU ayat ini ---
                 individualAyahsHTML += `
                     <div class="verse-block-individual">
                         <h4 class="individual-ayah-title">Ayat ${ayah}</h4>
@@ -376,12 +692,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
 
                         <div class="verse-translation">
-                            <b>Artinya (Ayat ${ayah}):</b> "${translationText}"
+                            <b>Artinya (Tafsir ${tafsirName} Ayat ${ayah}):</b>
+                            <div class="tafsir-text">${translationHTML}</div>
                         </div>
-                    </div>
+                        ${footnotesHTML}
+                        </div>
                     <hr class="ayah-divider">
                 `;
             });
+            // Hapus <hr> terakhir
             if (individualAyahsHTML.endsWith('<hr class="ayah-divider">')) {
                 individualAyahsHTML = individualAyahsHTML.substring(0, individualAyahsHTML.lastIndexOf('<hr class="ayah-divider">'));
             }
@@ -389,6 +708,30 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // --- KASUS B: DATA GABUNGAN (FORMAT LAMA / FALLBACK) ---
             const { arabicText, translationText, wordByWord } = asbabData;
+            
+            // --- [MODIFIKASI BARU] Coba cari tafsir untuk *ayat pertama* dari rentang ---
+            const firstAyahInKey = String(verseKey).split('-')[0].split(',')[0];
+            const tafsirKey = `${surahNumber}:${firstAyahInKey}`;
+            let translationHTML = '';
+            let footnotesHTML = '';
+
+            if (tafsirData && tafsirData[tafsirKey]) {
+                // Hanya tampilkan tafsir untuk ayat pertama dari rentang
+                const tafsirEntry = tafsirData[tafsirKey];
+                const processedTafsir = processTafsirText(tafsirEntry);
+                
+                translationHTML = `<b>Artinya (Tafsir ${tafsirName} Ayat ${firstAyahInKey}):</b><div class="tafsir-text">${processedTafsir.main}</div>`;
+                if (processedTafsir.notes) {
+                    footnotesHTML = `<div class="verse-footnotes"><h4>Catatan Tafsir:</h4>${processedTafsir.notes}</div>`;
+                }
+                // Tambahkan fallback ke terjemahan gabungan
+                translationHTML += `<br><br><b>Terjemahan Bawaan (Gabungan Ayat ${verseKey}):</b> "${translationText}"`;
+            } else {
+                // Fallback penuh ke data lama (terjemahan bawaan)
+                translationHTML = `<b>Artinya (Ayat ${verseKey}):</b> "${translationText}"`;
+            }
+            // --- [AKHIR MODIFIKASI] ---
+
             
             let wbwHTML = '<p class="no-history">Terjemahan per kata tidak tersedia.</p>';
             if (Array.isArray(wordByWord) && wordByWord.length > 0) {
@@ -412,17 +755,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${arabicText} <span class="verse-number-badge">(${verseKey})</span>
                     </div>
                     <div class="verse-translation">
-                        <b>Artinya (Ayat ${verseKey}):</b> "${translationText}"
+                        ${translationHTML}
                     </div>
-                </div>
+                    ${footnotesHTML}
+                    </div>
             `;
         }
 
 
-        // 6. Buat Riwayat Asbabun Nuzul
+        // 6. Buat Riwayat Asbabun Nuzul (di paling bawah)
         let historyHTML = '<p class="no-history">Tidak ada riwayat asbabun nuzul untuk ayat ini.</p>';
         if (historyArr && Array.isArray(historyArr) && historyArr.length > 0) {
             historyHTML = historyArr.map(riwayat => {
+                // Format teks: ganti \n dengan <br> dan **teks** dengan <strong>teks</strong>
                 const formattedRiwayat = String(riwayat)
                     .replace(/\n/g, '<br>')
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -430,8 +775,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }).join('');
         }
 
-        // 7. Gabungkan semua bagian
-        contentHTML += individualAyahsHTML; 
+        // 7. Gabungkan semua bagian: Header + (Loop Ayat) + IKLAN + Riwayat
+        contentHTML += individualAyahsHTML; // Tambahkan hasil loop
+        
+        // [IKLAN BARU] Tambahkan placeholder untuk Iklan Banner 4 (Setelah Arti)
+        // ID ini harus unik untuk setiap pemanggilan fungsi
+        const adPlaceholderMeaningId = 'ad-placeholder-ayat-after-meaning-' + Date.now();
+        contentHTML += `<div id="${adPlaceholderMeaningId}"></div>`;
+
+
         contentHTML += `
             <div class="asbabun-nuzul">
                 <h4>Asbabun Nuzul (untuk Ayat ${verseKey})</h4>
@@ -439,7 +791,12 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         
-        // 8. Tambahkan placeholder untuk Giscus
+        // [IKLAN BARU] Tambahkan placeholder untuk Iklan Native 2 (Setelah Asbab)
+        const adPlaceholderAsbabId = 'ad-placeholder-ayat-after-asbab-' + Date.now();
+        contentHTML += `<div id="${adPlaceholderAsbabId}"></div>`;
+
+        
+        // 8. Tambahkan placeholder untuk Giscus HANYA JIKA diaktifkan di config.js
         if (typeof ENABLE_COMMENTS !== 'undefined' && ENABLE_COMMENTS === true) {
             contentHTML += `
                 <div class="comments-section">
@@ -451,16 +808,32 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
+
         // 9. Masukkan ke DOM
         verseItemContainer.innerHTML = contentHTML;
         verseContentAreaEl.appendChild(verseItemContainer);
 
+        
+        // [IKLAN BARU] Panggil fungsi injeksi untuk iklan dinamis Halaman Ayat
+        // Kita panggil SETELAH HTML dimasukkan ke DOM
+        if (typeof injectAd === 'function') {
+            injectAd(`#${adPlaceholderMeaningId}`, getBannerAdHTML());
+            injectAd(`#${adPlaceholderAsbabId}`, getNativeAdHTML());
+        }
 
-        // 10. Muat Giscus secara dinamis
+
+        // 10. Muat Giscus secara dinamis SETELAH konten dimasukkan ke DOM
         if (typeof ENABLE_COMMENTS !== 'undefined' && ENABLE_COMMENTS === true) {
             const giscusContainer = verseItemContainer.querySelector('#giscus-comment-thread');
             
             if (giscusContainer) {
+                // Hapus script giscus lama jika ada (untuk mencegah duplikasi saat ganti tafsir)
+                const oldScript = giscusContainer.querySelector('script[src^="https://giscus.app"]');
+                if (oldScript) {
+                    oldScript.remove();
+                }
+
+                // Buat script tag Giscus secara dinamis
                 const giscusScript = document.createElement('script');
                 giscusScript.src = "https://giscus.app/client.js";
                 giscusScript.setAttribute("data-repo", "cinvisualcorp/Asbabun-Nuzul-DISKUSI");
@@ -497,7 +870,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 handleShare(surahNumber, firstAyah, surahLatinName);
             });
         }
+
+        // 12. [KODE BARU] Tambahkan Event Listener ke Tombol Copy
+        const copyButton = verseItemContainer.querySelector('.copy-btn');
+        if (copyButton) {
+            copyButton.addEventListener('click', () => {
+                // Kirim semua data yang relevan ke fungsi modal
+                openCopyModal(surahNumber, verseKey, surahLatinName, asbabData);
+            });
+        }
         
+        // Update URL
         updateURL(surahNumber, verseKey);
     };
 
@@ -513,10 +896,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 showVersePage(surahNum, ayahKey);
                 return true;
             } else {
+                // Jika ayat ada tapi tak ada riwayat, tetap tampilkan halaman surah
                 showVersePage(surahNum); 
                 return true;
             }
         } else if (surahNum && allSurahInfo[surahNum]) {
+             // Jika hanya ada parameter surah
             showVersePage(surahNum);
             return true;
         }
@@ -529,10 +914,12 @@ document.addEventListener('DOMContentLoaded', () => {
         params.set('surah', surahNumber);
         
         if (verseKey) {
+            // Ambil angka ayat pertama untuk URL (cth: dari "6-7" ambil "6")
             const firstAyah = String(verseKey).split('-')[0].split(',')[0];
             params.set('ayat', firstAyah);
         }
         
+        // Ganti URL tanpa me-reload halaman
         history.replaceState(null, '', `?${params.toString()}`);
     }
 
@@ -545,7 +932,14 @@ document.addEventListener('DOMContentLoaded', () => {
             verseDetailsPageEl.classList.add('hidden');
             surahListEl.classList.remove('hidden');
             mainTitleEl.classList.remove('hidden');
+            // Hapus parameter dari URL
             history.pushState(null, '', window.location.pathname);
+
+            // [IKLAN BARU] Muat ulang iklan halaman utama saat kembali
+            if (typeof injectAd === 'function') {
+                injectAd('#ad-placeholder-home-top', getBannerAdHTML());
+                injectAd('#ad-placeholder-home-bottom', getNativeAdHTML());
+            }
         });
 
         // Tombol Tema
@@ -555,12 +949,13 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', newTheme);
             applyTheme(newTheme);
 
+            // Kirim pesan ke Giscus iframe untuk mengubah tema
             const giscusIframe = document.querySelector('iframe.giscus-frame');
             if (giscusIframe) {
                 const giscusTheme = newTheme === 'dark' ? 'dark' : 'light';
                 giscusIframe.contentWindow.postMessage(
                     { giscus: { setConfig: { theme: giscusTheme } } },
-                    'https://giscus.app'
+                    'https://giscus.app' // Target origin Giscus
                 );
             }
         });
@@ -568,28 +963,45 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle navigasi back/forward browser
         window.addEventListener('popstate', () => {
             if (!checkURLParams()) {
+                // Jika kembali ke state tanpa parameter, tampilkan halaman utama
                 verseDetailsPageEl.classList.add('hidden');
                 surahListEl.classList.remove('hidden');
                 mainTitleEl.classList.remove('hidden');
+
+                // [IKLAN BARU] Muat ulang iklan halaman utama saat kembali
+                if (typeof injectAd === 'function') {
+                    injectAd('#ad-placeholder-home-top', getBannerAdHTML());
+                    injectAd('#ad-placeholder-home-bottom', getNativeAdHTML());
+                }
             }
         });
+
+        // --- [KODE BARU] Listener untuk menutup modal copy ---
+        if (modalCloseBtn) {
+            modalCloseBtn.addEventListener('click', closeCopyModal);
+        }
+        if (modalBackdrop) {
+            modalBackdrop.addEventListener('click', closeCopyModal);
+        }
+        // --- [AKHIR KODE BARU] ---
     }
 
     // --- Logika Mode Terang/Gelap (Helper) ---
     const applyTheme = (theme) => {
         if (theme === 'dark') {
             bodyEl.classList.add('dark-mode');
-            if (moonIcon) moonIcon.style.display = 'none'; 
-            if (sunIcon) sunIcon.style.display = 'block';
+            if (moonIcon) moonIcon.style.display = 'none'; // Sembunyikan bulan
+            if (sunIcon) sunIcon.style.display = 'block'; // Tampilkan matahari
         } else {
             bodyEl.classList.remove('dark-mode');
-            if (moonIcon) moonIcon.style.display = 'block';
-            if (sunIcon) sunIcon.style.display = 'none';
+            if (moonIcon) moonIcon.style.display = 'block'; // Tampilkan bulan
+            if (sunIcon) sunIcon.style.display = 'none'; // Sembunyikan matahari
         }
     };
 
     // --- Inisialisasi Aplikasi ---
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    // Terapkan tema yang tersimpan di localStorage saat memuat
+    const savedTheme = localStorage.getItem('theme') || 'light'; // default 'light'
     applyTheme(savedTheme);
     
     // Mulai aplikasi
