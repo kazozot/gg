@@ -217,17 +217,12 @@ document.addEventListener('DOMContentLoaded', () => {
         verseDetailsPageEl.classList.remove('hidden');
         
         // [IKLAN BARU] Panggil fungsi injeksi untuk iklan Halaman Ayat (Statis)
+        // [MODIFIKASI] Menggunakan nama fungsi baru
         if (typeof injectAd === 'function') {
-            
-            // [PERBAIKAN] Iklan banner hanya dipanggil SATU kali.
-            // Kita pindahkan dari 'before-info' ke 'after-info' sesuai permintaan Anda.
-            
-            // injectAd('#ad-placeholder-ayat-before-info', getBannerAdConfig()); // Dihapus dari sini
-            
-            // Komplain 1: "setelah info surat tidak muncul iklan"
-            // SOLUSI: Panggil iklan Banner di sini.
-            injectAd('#ad-placeholder-ayat-after-info', getBannerAdConfig()); 
+            injectAd('#ad-placeholder-ayat-before-info', getBannerAdConfig());
+            injectAd('#ad-placeholder-ayat-after-info', getBannerAdConfig());
         }
+        // [AKHIR MODIFIKASI]
 
         const surahInfo = allSurahInfo[surahNumber];
         const totalAyahs = ayahCounts[surahNumber];
@@ -831,17 +826,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // [IKLAN BARU] Panggil fungsi injeksi untuk iklan dinamis Halaman Ayat
         // Kita panggil SETELAH HTML dimasukkan ke DOM
+        // [MODIFIKASI] Menggunakan nama fungsi baru
         if (typeof injectAd === 'function') {
-            
-            // [PERBAIKAN] Iklan native hanya dipanggil SATU kali.
-            // Kita pindahkan dari 'after-asbab' ke 'after-meaning' sesuai permintaan Anda.
-
-            // Komplain 2: "setelah arti/sebelum asbabun nuzul tidak muncul iklan"
-            // SOLUSI: Panggil iklan Native di sini.
-            injectAd(`#${adPlaceholderMeaningId}`, getNativeAdConfig());
-            
-            // injectAd(`#${adPlaceholderAsbabId}`, getNativeAdConfig()); // Dihapus dari sini
+            injectAd(`#${adPlaceholderMeaningId}`, getBannerAdConfig());
+            injectAd(`#${adPlaceholderAsbabId}`, getNativeAdConfig());
         }
+        // [AKHIR MODIFIKASI]
 
 
         // 10. Muat Giscus secara dinamis SETELAH konten dimasukkan ke DOM
