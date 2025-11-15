@@ -1,8 +1,8 @@
-// --- MANAJEMEN IKLAN (VERSI PERBAIKAN V3 - iFrame untuk document.write) ---
+// --- MANAJEMEN IKLAN (VERSI PERBAIKAN V4 - SEMUA IKLAN VIA iFrame) ---
 
 /**
  * Mengembalikan objek konfigurasi untuk Banner Ad (728x90)
- * [MODIFIKASI] Menambahkan 'width' dan 'height' untuk iframe
+ * (Fungsi ini tidak diubah)
  * @returns {object | null} Objek Konfigurasi atau null jika ads nonaktif
  */
 function getBannerAdConfig() {
@@ -31,7 +31,7 @@ function getBannerAdConfig() {
 
 /**
  * Mengembalikan objek konfigurasi untuk Native Banner Ad
- * (Fungsi ini tidak diubah, sudah benar)
+ * [MODIFIKASI] Menambahkan 'width' dan 'height' untuk iframe
  * @returns {object | null} Objek Konfigurasi atau null jika ads nonaktif
  */
 function getNativeAdConfig() {
@@ -39,19 +39,18 @@ function getNativeAdConfig() {
         return null;
     }
     return {
-        type: 'native',
+        type: 'native', // Tipe untuk logika 'switch'
         containerClass: 'ad-container ad-native-banner',
-        // Script native ini butuh div dengan ID spesifik
-        innerDivId: 'container-f7278d1e580dbf687e9e48448cfe399f',
-        // URL untuk script external
+        width: '100%',  // Lebar iframe, akan mengisi container
+        height: 120,    // Tinggi iframe (CSS .ad-native-banner punya min-height: 100px)
+        innerDivId: 'container-f7278d1e580dbf687e9e48448cfe399f', // ID yang dicari script
         externalScriptSrc: '//pl28058077.effectivegatecpm.com/f7278d1e580dbf687e9e48448cfe399f/invoke.js'
     };
 }
 
 /**
- * Fungsi (V3) untuk menyisipkan iklan.
- * Tipe 'native' (modern) disisipkan langsung via DOM.
- * Tipe 'banner' (lama) disisipkan ke dalam iframe buatan.
+ * Fungsi (V4) untuk menyisipkan iklan.
+ * [PERBAIKAN] Sekarang SEMUA tipe iklan dimuat via iFrame.
  */
 function injectAd(placeholderSelector, adConfig) {
     if (!adConfig) return; // Ads dinonaktifkan
@@ -66,54 +65,42 @@ function injectAd(placeholderSelector, adConfig) {
     placeholder.innerHTML = ''; 
 
     try {
-        if (adConfig.type === 'native') {
-            // --- Logika untuk Iklan NATIVE (Sudah Benar & Berhasil) ---
-            const adWrapper = document.createElement('div');
-            adWrapper.className = adConfig.containerClass;
+        // --- Logika BARU: Semua iklan (banner & native) sekarang dimuat via iFrame ---
+        
+        // 1. Buat kontainer luar (untuk style margin/padding)
+        const adWrapper = document.createElement('div');
+        adWrapper.className = adConfig.containerClass;
 
-            const innerDiv = document.createElement('div');
-            innerDiv.id = adConfig.innerDivId;
-            adWrapper.appendChild(innerDiv);
+        // 2. Buat iframe sebagai "halaman web mini"
+        const adFrame = document.createElement('iframe');
+        adFrame.width = adConfig.width || '100%';
+        adFrame.height = adConfig.height || 100; // Fallback height
+        adFrame.frameBorder = 0;
+        adFrame.scrolling = 'no';
+        adFrame.style.border = 'none';
+        adFrame.style.overflow = 'hidden';
+        
+        // Atur style spesifik berdasarkan tipe
+        if (adConfig.type === 'banner') {
+             adFrame.style.maxWidth = '100%'; // Biarkan banner 728x90 mengecil di mobile
+        } else {
+             adFrame.style.width = '100%'; // Pastikan native frame mengisi container
+             // Biarkan height diatur oleh adConfig.height
+        }
 
-            const externalScript = document.createElement('script');
-            externalScript.async = true;
-            externalScript.setAttribute('data-cfasync', 'false');
-            externalScript.src = adConfig.externalScriptSrc;
-            adWrapper.appendChild(externalScript);
-            
-            placeholder.appendChild(adWrapper);
+        // 3. Gabungkan adWrapper dan adFrame, lalu masukkan ke placeholder
+        adWrapper.appendChild(adFrame);
+        placeholder.appendChild(adWrapper);
 
-        } else if (adConfig.type === 'banner') {
-            // --- Logika BARU untuk Iklan BANNER (via iFrame) ---
-            // Ini adalah perbaikan untuk skrip iklan yang menggunakan document.write()
-            
-            // 1. Buat kontainer luar (untuk style margin/padding)
-            const adWrapper = document.createElement('div');
-            adWrapper.className = adConfig.containerClass;
+        // 4. Siapkan HTML lengkap untuk ditulis ke dalam iframe
+        let adHtml = '';
+        const baseStyle = 'body, html { margin: 0; padding: 0; width: 100%; height: 100%; }';
 
-            // 2. Buat iframe sebagai "halaman web mini"
-            const adFrame = document.createElement('iframe');
-            adFrame.width = adConfig.width;
-            adFrame.height = adConfig.height;
-            adFrame.frameBorder = 0;
-            adFrame.scrolling = 'no';
-            adFrame.style.border = 'none';
-            adFrame.style.overflow = 'hidden';
-            adFrame.style.maxWidth = '100%'; // Agar tetap responsif
-
-            // 3. Gabungkan adWrapper dan adFrame, lalu masukkan ke placeholder
-            adWrapper.appendChild(adFrame);
-            placeholder.appendChild(adWrapper);
-
-            // 4. Siapkan HTML lengkap untuk ditulis ke dalam iframe
-            const adHtml = `
-                <html>
-                <head>
-                    <style>
-                        /* Reset body margin/padding di dalam iframe */
-                        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-                    </style>
-                </head>
+        if (adConfig.type === 'banner') {
+            // Style untuk banner: tengahkan konten
+            const bannerStyle = `${baseStyle} body { display: flex; justify-content: center; align-items: center; overflow: hidden; }`;
+            adHtml = `
+                <html><head><style>${bannerStyle}</style></head>
                 <body>
                     <script type="text/javascript">
                         ${adConfig.inlineScriptContent}
@@ -122,9 +109,21 @@ function injectAd(placeholderSelector, adConfig) {
                 </body>
                 </html>
             `;
+        } else if (adConfig.type === 'native') {
+            // Style untuk native: biarkan default (top-left)
+            adHtml = `
+                <html><head><style>${baseStyle}</style></head>
+                <body>
+                    <div id="${adConfig.innerDivId}"></div>
+                    <script async="async" data-cfasync="false" src="${adConfig.externalScriptSrc}"><\/script>
+                </body>
+                </html>
+            `;
+        }
 
-            // 5. Tulis HTML ke dalam iframe
-            // Kita gunakan 'setTimeout' 0 untuk memastikan iframe sudah 
+        // 5. Tulis HTML ke dalam iframe
+        if (adHtml) {
+            // Kita gunakan 'setTimeout' 0 untuk memastikan iframe sudah
             // ter-render di DOM sebelum kita akses 'contentWindow'
             setTimeout(() => {
                 if (adFrame.contentWindow) {
