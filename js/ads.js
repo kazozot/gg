@@ -1,4 +1,4 @@
-// File ini berfungsi sebagai "umpan".
-// AdBlock biasanya akan memblokir file yang bernama "ads.js".
-// Jika variabel ini terbaca true, berarti tidak ada AdBlock.
-var canRunAds = true;
+// File: gg-main/js/ads.js
+// Kita set variabel global. Jika file ini diblokir, variabel ini tidak akan ada.
+window.adBlockerDisabled = true;
+console.log("Ads.js berhasil dimuat"); // Untuk debugging di console
